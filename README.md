@@ -1,5 +1,7 @@
 # Copyit
 
+<p align="center"><img src="docs/logo.png" alt="Copyit logo" width="110"></p>
+
 Free Chrome extension. Save text, links, code, images and videos once. Find them forever. Everything stays on your device. No account, no tracking, no server.
 
 **Website:** [https://Socialmania99.github.io/copyit/ ](https://socialmania99.github.io/Copyit/)

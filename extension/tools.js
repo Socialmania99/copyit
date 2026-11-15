@@ -9,20 +9,29 @@
   const sync = () => chrome.runtime.sendMessage({ type: 'SYNC_SCRIPTS' }).catch(() => { });
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const UNITS = [['paragraph', 'Paragraph', 'The whole block under the pointer'], ['sentence', 'Sentence', 'Just the sentence under the pointer'], ['selection', 'Selection', 'Highlight text and it copies itself']];
+  const CHECK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
 
-  function build(popup) {
-    const el = document.createElement(popup ? 'details' : 'section');
-    el.className = 'tools' + (popup ? ' in-popup' : '');
-    if (popup) { let open = true; try { open = localStorage.getItem('copyitToolsOpen') !== '0'; } catch { } el.open = open; }
-    el.innerHTML = `
-      ${popup ? '<summary><span class="tt">Page tools</span><span class="tc" id="toolsCount"></span></summary>' : '<h3 class="tt">Page tools</h3>'}
-      <label class="set-row tool"><span><b>Click to copy</b><small>Hover any text and click once. No highlighting, no Ctrl+C. Hold Alt to click normally.</small></span><input type="checkbox" class="switch" id="tgClick" aria-label="Click to copy"></label>
-      <div class="tool-opts" id="clickOpts" hidden>
-        <div class="unit" role="radiogroup" aria-label="What a click copies">${UNITS.map(u => `<button type="button" role="radio" data-unit="${u[0]}" title="${esc(u[2])}">${u[1]}</button>`).join('')}</div>
-        <label class="mini-row"><input type="checkbox" id="tgSave"><span>Also save each copy to my Copyit list</span></label>
+  // The two tools, drawn once and used both in the popup dropdown and in the dashboard settings.
+  function body() {
+    return `
+      <div class="pt-row"><span><b>Click to copy</b><small>Hover text, click once. Hold Alt to click normally.</small></span><input type="checkbox" class="switch" id="tgClick" aria-label="Click to copy"></div>
+      <div class="pt-opts" id="clickOpts">
+        <div class="unit" role="radiogroup" aria-label="What a click copies">${UNITS.map(u => `<button type="button" role="radio" data-unit="${u[0]}" aria-checked="false" title="${esc(u[2])}">${u[1]}</button>`).join('')}</div>
+        <label class="mini-row"><input type="checkbox" id="tgSave"><span>Also save each copy to my list</span></label>
       </div>
-      <label class="set-row tool"><span><b>Copy text from images &amp; videos</b><small>Hover a picture or a paused video, press <em>Copy text</em>. Reads the text on this device. Right-click an image or video also works without this switch.</small></span><input type="checkbox" class="switch" id="tgImg" aria-label="Copy text from images and videos"></label>
+      <div class="pt-sep"></div>
+      <div class="pt-row"><span><b>Copy text from images &amp; videos</b><small>Hover a picture or paused video, press Copy text.</small></span><input type="checkbox" class="switch" id="tgImg" aria-label="Copy text from images and videos"></div>
       <p class="tool-note" id="toolNote" hidden></p>`;
+  }
+  function build(popup) {
+    const el = document.createElement(popup ? 'div' : 'section');
+    if (popup) {
+      el.className = 'ptbar';
+      el.innerHTML = `<button type="button" class="ptbtn" id="ptBtn" aria-haspopup="true" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><path d="M5 4l5 14 2.2-5.8L18 10z"/><path d="M13.5 14.5L19 20"/></svg><span class="ptl">Page tools</span><span class="pts" id="toolsCount">off</span><svg class="i car" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="ptpop" id="ptPop" hidden>${body()}</div>`;
+    } else {
+      el.className = 'tools';
+      el.innerHTML = `<h3 class="tt">Page tools</h3>${body()}`;
+    }
     return el;
   }
 
@@ -30,8 +39,9 @@
     const q = s => el.querySelector(s), note = q('#toolNote');
     const say = t => { note.textContent = t || ''; note.hidden = !t; };
     const paint = s => {
-      q('#tgClick').checked = !!s.clickCopy; q('#tgImg').checked = !!s.imgText; q('#tgSave').checked = s.clickSave !== false;
-      q('#clickOpts').hidden = !s.clickCopy;
+      q('#tgClick').checked = !!s.clickCopy; q('#tgImg').checked = !!s.imgText;
+      q('#tgSave').checked = s.clickSave !== false;
+      q('#clickOpts').classList.toggle('off', !s.clickCopy);
       el.querySelectorAll('[data-unit]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.unit === s.clickUnit)));
       const n = (s.clickCopy ? 1 : 0) + (s.imgText ? 1 : 0), c = q('#toolsCount'); if (c) { c.textContent = n ? `${n} on` : 'off'; c.classList.toggle('on', !!n); }
     };
@@ -61,16 +71,22 @@
     q('#tgImg').addEventListener('change', e => flip('imgText', e.target));
     q('#tgSave').addEventListener('change', async e => { await patch({ clickSave: e.target.checked }); });
     el.querySelectorAll('[data-unit]').forEach(b => b.addEventListener('click', async () => { await patch({ clickUnit: b.dataset.unit }); paint(await load()); }));
-    if (el.tagName === 'DETAILS') el.addEventListener('toggle', () => { try { localStorage.setItem('copyitToolsOpen', el.open ? '1' : '0'); } catch { } });
+    const btn = q('#ptBtn'), pop = q('#ptPop');
+    if (btn) {                                                       // popup: small dropdown that floats over the list
+      const shut = () => { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+      btn.addEventListener('click', e => { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
+      document.addEventListener('click', e => { if (!pop.hidden && !el.contains(e.target)) shut(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && !pop.hidden) { shut(); btn.focus(); } });
+    }
     chrome.storage.onChanged.addListener((ch, area) => { if (area === 'local' && ch[SETTINGS]) load().then(paint); });
   }
 
   function mount() {
     const pop = document.body.classList.contains('popup');
-    const host = pop ? document.getElementById('list') : document.querySelector('#settingsDialog .set > h2 + p');
+    const host = pop ? document.querySelector('.popup > header.top') : document.querySelector('#settingsDialog .set > h2 + p');
     if (!host) return;
     const el = build(pop);
-    if (pop) host.before(el); else host.after(el);
+    host.after(el);
     wire(el);
   }
   mount();

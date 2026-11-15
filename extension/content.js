@@ -20,7 +20,7 @@
     :host{all:initial}
     *{box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
     .hl{position:fixed;display:none;pointer-events:none;border:2px dashed #3b6ef5;border-radius:8px;background:rgba(59,110,245,.07)}
-    .ln{position:fixed;pointer-events:none;border-radius:3px;background:rgba(59,110,245,.18)}
+    .ln{position:fixed;pointer-events:none;border-radius:4px;background:rgba(59,110,245,.14);border:2px dashed #3b6ef5}
     .ring{position:fixed;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:2px solid #3b6ef5;pointer-events:none;opacity:0}
     .ring.go{animation:ring .5s ease-out}
     @keyframes ring{from{opacity:.85;transform:scale(.3)}to{opacity:0;transform:scale(1.5)}}
@@ -155,7 +155,7 @@
       lines.textContent = '';
       const rects = [...s.range.getClientRects()].filter(r => r.width > 1);
       for (const r of rects) { const d = document.createElement('div'); d.className = 'ln'; Object.assign(d.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px', height: r.height + 'px' }); lines.appendChild(d); }
-      const b = s.range.getBoundingClientRect(); showBox(b);
+      hl.style.display = 'none';
       current = { text: s.text, label: 'Sentence copied', note: s.idx.tot > 1 ? `${s.idx.k} of ${s.idx.tot}` : '' };
     } else {
       lines.textContent = '';
@@ -265,6 +265,7 @@
   }
   const onKey = e => { if (e.key === 'Escape') { clearHl(); hideChip(); hideToast(); } };
   const onScroll = () => { if (current) clearHl(); if (mediaEl) placeChip(); };
+  const onOut = e => { if (!e.relatedTarget || e.relatedTarget.tagName === 'IFRAME') clearHl(); };
   let wired = false;
   function wire(on) {
     const f = on ? 'addEventListener' : 'removeEventListener';
@@ -275,6 +276,7 @@
     window[f]('keydown', onKey, true);
     window[f]('scroll', onScroll, { capture: true, passive: true });
     document[f]('mouseleave', clearHl);
+    document[f]('mouseout', onOut, true);
     if (!on) { clearHl(); hideChip(); }
   }
   function apply(next) {
