@@ -1023,7 +1023,7 @@ async function openSettings() {
   d.showModal();
 }
 async function saveSettings() {
-  settings = { blur: $('setBlur').checked, excludeSensitiveFromExport: $('setExcl').checked, linkPreview: $('setLink').checked, keepDays: +$('setDays').value, maxEntries: +$('setMax').value };
+  settings = { ...settings, blur: $('setBlur').checked, excludeSensitiveFromExport: $('setExcl').checked, linkPreview: $('setLink').checked, keepDays: +$('setDays').value, maxEntries: +$('setMax').value };
   await chrome.storage.local.set({ [SETTINGS_KEY]: settings });
   const before = entries.length;
   await autoClean();

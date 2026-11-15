@@ -711,3 +711,27 @@ body{background:var(--bg)}
 
 .datasec h3{margin:14px 0 2px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .dt-btns{display:flex;flex-wrap:wrap;gap:8px;padding:2px 2px 8px}
+
+/* ───── v1.1.0 page tools ───── */
+.tools{margin:10px 0 12px;padding:2px 14px 6px;border:1px solid var(--line);border-radius:14px;background:var(--card-solid, var(--card))}
+.tools .tt{font-size:13px;font-weight:700;letter-spacing:.01em}
+h3.tt{margin:12px 0 2px}
+.tools.in-popup{margin:8px 12px 10px;padding:0 12px 4px}
+.tools.in-popup summary{display:flex;align-items:center;justify-content:space-between;padding:10px 0;cursor:pointer;list-style:none}
+.tools.in-popup summary::-webkit-details-marker{display:none}
+.tools.in-popup summary::after{content:"";width:7px;height:7px;margin-left:8px;border:solid var(--muted);border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px)}
+.tools.in-popup[open] summary::after{transform:rotate(-135deg) translateY(-1px)}
+.tools.in-popup summary .tc{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--muted);padding:2px 8px;border-radius:99px;background:var(--field)}
+.tools.in-popup summary .tc.on{color:var(--on);background:var(--accent)}
+.tools .set-row.tool{border-top:1px solid var(--line);padding:11px 0}
+.tools > .tool:first-of-type, .tools.in-popup > summary + .tool{border-top:0}
+.tools .set-row small{font-size:11.5px;line-height:1.4}
+.tools em{font-style:normal;font-weight:700;color:var(--ink)}
+.tool-opts{padding:2px 0 12px}
+.tool-opts[hidden]{display:none}
+.unit{display:flex;gap:4px;padding:3px;border-radius:11px;background:var(--field)}
+.unit button{flex:1;padding:7px 6px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:12.5px;font-family:inherit;cursor:pointer}
+.unit button[aria-checked=true]{background:var(--accent);color:var(--on)}
+.mini-row{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:12.5px;color:var(--muted);cursor:pointer}
+.mini-row input{accent-color:var(--accent)}
+.tool-note{margin:0 0 10px;padding:8px 10px;border-radius:9px;background:rgba(225,29,72,.09);color:var(--danger,#e11d48);font-size:12px;line-height:1.4}

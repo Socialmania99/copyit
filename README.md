@@ -15,6 +15,8 @@ Download, install and every main feature in about 2 minutes. Player not showing?
 
 ## Features
 - Save, search, tag and sort clips into folders. Filters: All, Links, Code, Multimedia.
+- **New in 1.1.0 - Click to copy:** hover text, click once, copied. Paragraph, sentence or selection. Has an on/off switch.
+- **New in 1.1.0 - Copy text from images and videos:** hover a picture or paused video, press Copy text. Works offline on your device.
 - Preview button opens a small viewer window.
 - **Scan to open:** QR code for short clips (text or links, up to 5 KB). Offline. Longer text becomes numbered QR codes. Images, videos, files too big.
 - Import and export: JSON, CSV, TXT, Markdown.
@@ -26,7 +28,7 @@ Full list: [FEATURES.md](FEATURES.md).
 ## Install (short)
 Prefer to watch? [Install steps in the video](https://youtu.be/6jOjqSzReSs?t=24) start at 0:24.
 
-1. Get `copyit-v1.0.zip` from Releases (or Drive). Unzip.
+1. Get `copyit-v1.1.0.zip` from Releases (or Drive). Unzip.
 2. Chrome: `chrome://extensions`. Turn on **Developer mode**.
 3. **Load unpacked**. Pick the `copyit` folder (the one with `manifest.json`).
 4. Pin it from the puzzle-piece menu.

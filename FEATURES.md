@@ -1,9 +1,15 @@
-# Copyit 1.0.0 features
+# Copyit 1.1.0 features
 
 ## Saving
 - Save text, links, code, images and videos. Right-click selected text: "Save selected text to Copyit".
 - Open with the toolbar icon or `Ctrl+Shift+Y` (`Cmd+Shift+Y` on Mac).
 - Popup for quick use. Dashboard for the full view.
+
+## Page tools (new in 1.1.0, both off by default)
+Turn them on in the popup ("Page tools") or in Settings. Chrome asks once to allow Copyit on websites; it only acts on a page after you hover or click.
+- **Click to copy.** Hover text, a dashed box shows what will be copied, click once, "Text copied" appears. Pick what a click copies: **Paragraph**, **Sentence** or **Selection** (highlight text and it copies itself). Option: also save each copy to your Copyit list. Links, buttons, inputs and editors are ignored. Hold **Alt** to click normally. **Esc** hides the box.
+- **Copy text from images and videos.** Hover an image or a paused video, press **Copy text**. The text is read on your device and copied. Works on photos, screenshots, memes, slides, posters, video frames. Letters, numbers and common symbols (€ £ © ® ™ % @ #). Dark backgrounds are handled. Right-click an image or video and choose "Copy text from this image or video" to use it without the switch.
+- **Limits:** English text. Emoji and decorative symbols are not recognised. Small, blurry or stylised text may come out wrong. Pause a video on a clear frame first. Needs a normal web page (not the Chrome Web Store or chrome:// pages).
 
 ## Finding
 - Search clips and `#tags`.
@@ -31,7 +37,7 @@
 
 ## Privacy
 - No account, no analytics, no server. Clips stay in Chrome storage on your computer.
-- Permissions are only what saving and previewing need. Copyit does not read pages you do not ask it to.
+- Page tools stay off until you switch them on. Then Copyit reads a page only when you hover or click. The text reader runs inside the extension. No image, text or screenshot is sent anywhere.
 
 ## Tested
 Automated browser tests with a mocked Chrome API and a QR decoder: core, settings, previews, folders, donate, import/export, Scan to open (exact URL, UTF-8 text, numbered pages, 5 KB limit).

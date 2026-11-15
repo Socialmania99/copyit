@@ -1,18 +1,51 @@
 {
   "manifest_version": 3,
   "name": "Copyit",
-  "version": "1.0.0",
-  "description": "Copyit — save text, links, code, rich text and images you copy. Search, tag, copy as other formats, and back up locally.",
-  "permissions": ["storage", "unlimitedStorage", "contextMenus", "clipboardRead", "clipboardWrite", "downloads"],
-  "background": { "service_worker": "background.js" },
-  "icons": { "16": "icons/icon16.png", "32": "icons/icon32.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "version": "1.1.0",
+  "minimum_chrome_version": "109",
+  "description": "Copyit — save text, links, code, rich text and images you copy. Click any text to copy it, copy text out of images and videos, search, tag and back up locally.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "contextMenus",
+    "clipboardRead",
+    "clipboardWrite",
+    "downloads",
+    "activeTab",
+    "scripting",
+    "offscreen"
+  ],
+  "optional_host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_title": "Copyit",
     "default_popup": "popup.html",
-    "default_icon": { "16": "icons/icon16.png", "32": "icons/icon32.png" }
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png"
+    }
   },
   "commands": {
-    "_execute_action": { "suggested_key": { "default": "Ctrl+Shift+Y", "mac": "Command+Shift+Y" }, "description": "Open Copyit" }
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Open Copyit"
+    }
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   },
   "options_page": "dashboard.html"
 }

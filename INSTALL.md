@@ -12,7 +12,7 @@ Video: download and install steps start at 0:24. [Watch on YouTube](https://yout
 
 ## Get the files (pick one)
 - **A. Google Drive:** https://drive.google.com/file/d/1RxlnzMSdSZsIr42oWVV7r6P7LsoFYRQT/view?usp=sharing
-- **B. GitHub Release:** https://github.com/Socialmania99/copyit/releases/tag/v1.0.0
+- **B. GitHub Release:** https://github.com/Socialmania99/copyit/releases/tag/v1.1.0
 - **C. GitHub code:** click green **Code** button, **Download ZIP**. Then use the `extension` folder inside it.
 
 ## Steps
@@ -22,7 +22,7 @@ Video: download and install steps start at 0:24. [Watch on YouTube](https://yout
 4. **Open the extensions page.** Type `chrome://extensions` in the address bar and press Enter (or menu ⋮, Extensions, Manage Extensions).
 5. **Turn on Developer mode.** Use the switch at the top right. Three buttons appear at the top left: Load unpacked, Pack extension, Update.
 6. **Click Load unpacked.**
-7. **Choose the `copyit` folder** (the one with `manifest.json` directly inside) and press Select Folder. A Copyit card appears, version 1.0.0, switched on.
+7. **Choose the `copyit` folder** (the one with `manifest.json` directly inside) and press Select Folder. A Copyit card appears, version 1.1.0, switched on.
 8. **Pin it.** Click the puzzle-piece icon at the top right of Chrome and pin Copyit. Open it any time with Ctrl+Shift+Y (Command+Shift+Y on Mac).
 9. **Try it.** Select some text on a page, right-click, choose "Save selected text to Copyit", then click the Copyit icon and press Copy.
 
@@ -41,3 +41,8 @@ Back up first: Copyit, Settings, Import & export, JSON backup. Replace the files
 
 ## Removing
 `chrome://extensions`, then Remove on the Copyit card. This deletes your clips, so export a backup first.
+
+## Updating from 1.0.0
+1. Download `copyit-v1.1.0.zip` and unzip it over the old `copyit` folder (replace the files).
+2. Open `chrome://extensions` and press the **reload** arrow on the Copyit card.
+3. Your saved clips stay. Page tools are off until you switch them on in the popup.

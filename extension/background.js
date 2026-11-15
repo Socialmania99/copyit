@@ -8,10 +8,14 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({ id: 'save-link', title: 'Save link address to Copyit', contexts: ['link'] });
     chrome.contextMenus.create({ id: 'save-image-url', title: 'Save image address to Copyit', contexts: ['image'] });
     chrome.contextMenus.create({ id: 'save-page-url', title: 'Save page address to Copyit', contexts: ['page'] });
+    chrome.contextMenus.create({ id: 'ocr-media', title: 'Copy text from this image or video', contexts: ['image', 'video'] });
   });
+  syncScripts();
 });
+chrome.runtime.onStartup.addListener(syncScripts);
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (info.menuItemId === 'ocr-media') { ocrFromMenu(info, tab); return; }
   const text = { 'save-selected-text': info.selectionText, 'save-link': info.linkUrl, 'save-image-url': info.srcUrl, 'save-page-url': info.pageUrl || tab?.url }[info.menuItemId];
   if (!text) return;
   await enqueue(() => saveEntry({ content: text, source: 'context-menu' }));
@@ -68,7 +72,13 @@ async function saveEntry(input, blob) {
   return { ok: true, id, duplicate };
 }
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.target === 'offscreen') return;
+  if (message?.type === 'OCR_CAPTURE') {
+    runOcr(sender.tab, message.rect, message.viewW, message.viewH).then(sendResponse);
+    return true;
+  }
+  if (message?.type === 'SYNC_SCRIPTS') { syncScripts().then(() => sendResponse({ ok: true })); return true; }
   if (message?.type === 'SAVE_ENTRY') {
     enqueue(() => saveEntry(message.entry || {}, message.blob)).then(sendResponse).catch(error => sendResponse({ ok: false, error: error.message }));
     return true;
@@ -78,3 +88,60 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
 });
+
+
+/* ───────────── v1.1.0: page helper (click to copy, copy text from images & videos) ───────────── */
+const CS_ID = 'copyit-page-helper', ALL = { origins: ['<all_urls>'] };
+
+// The page helper is only registered while a feature is switched on AND you have allowed Copyit on all sites.
+async function syncScripts() {
+  try {
+    const data = await chrome.storage.local.get(SETTINGS);
+    const s = { ...DEFAULT_SETTINGS, ...(data[SETTINGS] || {}) };
+    const want = (s.clickCopy || s.imgText) && await chrome.permissions.contains(ALL);
+    const have = (await chrome.scripting.getRegisteredContentScripts({ ids: [CS_ID] })).length > 0;
+    if (want && !have) {
+      await chrome.scripting.registerContentScripts([{ id: CS_ID, matches: ['http://*/*', 'https://*/*'], js: ['content.js'], runAt: 'document_idle', allFrames: false, persistAcrossSessions: true }]);
+      injectOpenTabs();
+    } else if (!want && have) {
+      await chrome.scripting.unregisterContentScripts({ ids: [CS_ID] });
+    } else if (want && have) injectOpenTabs();
+  } catch (e) { console.warn('Copyit page helper:', e && e.message); }
+}
+async function injectOpenTabs() {            // so the switch works on pages that are already open, without a reload
+  try {
+    const tabs = await chrome.tabs.query({ url: ['http://*/*', 'https://*/*'] });
+    await Promise.all(tabs.map(t => chrome.scripting.executeScript({ target: { tabId: t.id }, files: ['content.js'] }).catch(() => { })));
+  } catch { }
+}
+chrome.storage.onChanged.addListener((ch, area) => { if (area === 'local' && ch[SETTINGS]) syncScripts(); });
+chrome.permissions.onAdded.addListener(syncScripts);
+chrome.permissions.onRemoved.addListener(syncScripts);
+
+/* ----- reading text out of a screenshot of an image or video ----- */
+let offscreenReady = null;
+async function ensureOffscreen() {
+  if (await chrome.offscreen.hasDocument()) return;
+  if (!offscreenReady) offscreenReady = chrome.offscreen.createDocument({ url: 'offscreen.html', reasons: ['WORKERS'], justification: 'Reads text from images and videos on this device with a bundled OCR engine' }).finally(() => { offscreenReady = null; });
+  await offscreenReady;
+}
+async function runOcr(tab, rect, viewW, viewH) {
+  if (!tab || tab.id == null) return { ok: false, error: 'No tab to read.' };
+  let shot;
+  try { shot = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' }); }
+  catch (e) { return { ok: false, error: /permission|activeTab|<all_urls>/i.test(String(e && e.message)) ? 'Copyit needs permission for this page. Use the right-click item or allow all sites in Copyit settings.' : 'Could not capture this page.' }; }
+  chrome.tabs.sendMessage(tab.id, { target: 'page', type: 'OCR_STATUS', text: 'Reading text…' }).catch(() => { });
+  try {
+    await ensureOffscreen();
+    const r = await chrome.runtime.sendMessage({ target: 'offscreen', type: 'OCR_RUN', shot, rect, viewW, viewH });
+    return r || { ok: false, error: 'The text reader did not answer. Try again.' };
+  } catch (e) { return { ok: false, error: 'The text reader could not start: ' + (e && e.message || e) }; }
+}
+async function ocrFromMenu(info, tab) {         // right-click on an image or video (works through activeTab, no extra permission)
+  if (!tab || tab.id == null) return;
+  try { await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] }); } catch { return; }
+  let found; try { found = await chrome.tabs.sendMessage(tab.id, { target: 'page', type: 'OCR_FIND', srcUrl: info.srcUrl || '' }); } catch { }
+  if (!found || !found.ok) return;
+  const result = await runOcr(tab, found.rect, found.viewW, found.viewH);
+  chrome.tabs.sendMessage(tab.id, { target: 'page', type: 'OCR_RESULT', result }).catch(() => { });
+}
