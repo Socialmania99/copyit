@@ -33,7 +33,7 @@
     <div class="logo" aria-hidden="true"><svg viewBox="0 0 40 40"><rect x="11" y="9" width="18" height="22" rx="4" fill="#fff"/><rect x="15" y="7" width="10" height="5" rx="2" fill="#fff"/><path d="M15 18h10M15 22h10M15 26h6" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/></svg></div>
     <div>
       <h1>Copyit Privacy Policy</h1>
-      <p class="date">Last updated: November 7, 2026</p>
+      <p class="date">Last updated: November 15, 2026</p>
     </div>
   </header>
 
@@ -55,6 +55,10 @@
     <h2>5. Scan to open</h2>
     <p>QR codes are generated on your device. Nothing is uploaded.</p>
 
+    <h2>5a. Page tools (optional, off by default)</h2>
+    <p>"Click to copy" and "Copy text from images &amp; videos" are off until you switch them on. When you do, Chrome asks you once to let Copyit work on websites; turning both switches off gives that permission back. With a tool on, Copyit looks at a page only when you hover or click, to find the text you chose. Text you copy goes to your clipboard and, if you leave the option on, into your Copyit list on this device.</p>
+    <p>To read text in an image or video, Copyit takes a picture of the visible part of the tab and reads it with an OCR engine that is bundled inside the extension. The picture and the text are processed on your device, are not saved unless you copy the text into your list, and are never uploaded.</p>
+
     <h2>6. Exports and backups</h2>
     <p>Files you export (JSON, CSV, TXT, Markdown) are saved to your computer by you. Copyit does not send them anywhere.</p>
 
@@ -64,8 +68,11 @@
       <li><code>clipboardRead</code>, <code>clipboardWrite</code>: save from and copy to your clipboard when you ask.</li>
       <li><code>contextMenus</code>: the right-click save options.</li>
       <li><code>downloads</code>: save files you export or download.</li>
+      <li><code>activeTab</code>, <code>scripting</code>: used by the right-click "Copy text from this image or video" item on the page you chose.</li>
+      <li><code>offscreen</code>: runs the bundled text reader in a hidden extension page.</li>
+      <li>Optional access to all sites: requested only when you switch on a page tool. It lets Copyit show its copy button and read the text you click. Copyit does not read your browsing history.</li>
     </ul>
-    <p>Copyit has no host permissions. It does not read website content or your browsing history.</p>
+    <p>Without a page tool switched on, Copyit has no access to website content.</p>
 
     <h2>8. Support links</h2>
     <p>The heart icon opens donation pages (such as PayPal or Ko-fi) in a new tab. Those sites have their own privacy policies. Copyit shares no data with them.</p>
