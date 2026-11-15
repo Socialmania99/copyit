@@ -4,10 +4,17 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="description" content="Copyit is a free, private clipboard history manager for Chrome. Save text, links, code and images, search them, and copy them back in any format. No account, no tracking.">
-<meta name="copyit-build" content="2026-11-14-cursor-v4">
+<meta name="copyit-build" content="2026-11-15-v1.1.0">
 <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0e1014" media="(prefers-color-scheme: dark)">
 <title>Copyit</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:title" content="Copyit: your private clipboard history">
+<meta property="og:description" content="Free Chrome extension. Save what you copy, click any text to copy it, and copy text out of images and videos. No account.">
+<meta property="og:image" content="https://socialmania99.github.io/Copyit/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,7 +72,7 @@ code,.mono{font-family:var(--mono)}
 .nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;padding-block:10px;background:var(--bg);border-bottom:1px solid var(--line)}
 .nav .in{display:flex;align-items:center;gap:16px}
 .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.03em}
-.mark{width:32px;height:32px;display:block;border-radius:10px}
+.mark{width:32px;height:32px;display:block;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(20,40,120,.25))}
 .nav-links{display:flex;gap:2px;margin-left:auto}
 .nav-links a{padding:8px 11px;border-radius:9px;text-decoration:none;font-size:14.5px;font-weight:500;color:var(--muted)}
 .nav-links a:hover{color:var(--ink);background:var(--field)}
@@ -99,7 +106,7 @@ h1.big em{font-style:normal;color:var(--accent)}
 .url{flex:1;margin-left:8px;padding:5px 12px;border-radius:99px;background:var(--field);font:12px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pp{padding:14px 14px 16px;background:var(--bg)}
 .pp-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.pp-top .mark{width:28px;height:28px;border-radius:9px}
+.pp-top .mark{width:30px;height:30px}
 .pp-top h4{font:800 17px/1.1 var(--display);letter-spacing:-.02em}
 .pp-top p{font-size:11.5px}
 .pp-top .grow{flex:1}
@@ -419,6 +426,83 @@ html.has-cur input,html.has-cur textarea{cursor:text!important}
 .vchap a{padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13.5px;font-weight:600;text-decoration:none}
 .vchap a:hover{border-color:var(--accent);color:var(--accent)}
 .vid-note{text-align:center;color:var(--muted);font-size:14.5px;margin:14px 0 0}
+
+/* ===== v1.1.0 page tools demo ===== */
+.ptbar{position:relative;margin:0 0 10px;z-index:8}
+.ptbtn{display:flex;align-items:center;gap:8px;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);font:600 13px/1.1 inherit;font-family:inherit;cursor:pointer;text-align:left}
+.ptbtn svg.i{width:16px;height:16px}
+.ptbtn .ptl{flex:1}
+.ptbtn .pts{padding:3px 9px;border-radius:99px;background:var(--field);color:var(--muted);font-size:11.5px}
+.ptbtn .pts.on{background:var(--btn);color:#fff}
+.ptbtn .car{width:14px;height:14px;transition:transform .2s}
+.ptbtn[aria-expanded=true] .car{transform:rotate(180deg)}
+.ptpop{position:absolute;left:0;right:0;top:calc(100% + 6px);padding:10px 12px 8px;border-radius:14px;background:#fff;color:#1b1d27;border:1px solid #e3e6ee;box-shadow:0 18px 40px -8px rgba(10,14,40,.45)}
+.ptpop[hidden]{display:none}
+.ptpanel{padding:14px 16px 10px;border-radius:16px;background:#fff;color:#1b1d27;border:1px solid #e3e6ee;box-shadow:0 14px 34px -14px rgba(10,14,40,.25)}
+.ptpop small,.ptpanel small{color:#6b7390}
+.pt-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
+.pt-row b{display:block;font-size:14px;font-weight:700}
+.pt-row small{display:block;margin-top:2px;font-size:11.5px;line-height:1.35}
+.pt-opts{margin:2px 0 4px 2px}
+.pt-opts.off{opacity:.42;pointer-events:none}
+.opt{display:flex;align-items:center;gap:11px;width:100%;padding:7px 8px;border:0;border-radius:9px;background:transparent;color:#1b1d27;font:500 14px/1.2 inherit;font-family:inherit;text-align:left;cursor:pointer}
+.opt:hover{background:#f3f5fb}
+.opt.sm{font-size:12.5px;color:#6b7390;margin-top:2px}
+.bx{flex:none;width:20px;height:20px;border-radius:6px;border:1.8px solid #b9bfd0;display:grid;place-items:center;background:#fff;transition:background .15s,border-color .15s}
+.bx svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.6);transition:all .15s}
+.opt[aria-checked=true] .bx{background:#2f5fe8;border-color:#2f5fe8}
+.opt[aria-checked=true] .bx svg{opacity:1;transform:none}
+.unit{display:flex;gap:4px;padding:3px;border-radius:11px;background:#eef0f6}
+.unit button{flex:1;padding:7px 6px;border:0;border-radius:8px;background:transparent;color:#5a6178;font:600 12.5px/1 inherit;font-family:inherit;cursor:pointer}
+.unit button[aria-checked=true]{background:#2f5fe8;color:#fff}
+.mini-row{display:flex;align-items:center;gap:8px;margin-top:9px;font-size:12.5px;color:#5a6178;cursor:pointer}
+.mini-row input{accent-color:#2f5fe8}
+.pt-opts{margin:4px 0 6px}
+.pt-sep{margin:6px 0;border-top:1px solid #e8ebf2}
+.sw{appearance:none;-webkit-appearance:none;flex:none;width:44px;height:26px;border-radius:99px;background:#ccd1de;position:relative;cursor:pointer;transition:background .2s;border:0}
+.sw::after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:transform .2s}
+.sw:checked{background:#2f5fe8}.sw:checked::after{transform:translateX(18px)}
+.sw:focus-visible{outline:3px solid rgba(47,95,232,.4);outline-offset:2px}
+#pp .ptbar{margin-top:2px}
+.try{display:grid;grid-template-columns:330px 1fr;gap:22px;align-items:start}
+.try-win{border-radius:16px;overflow:hidden;background:#fff;color:#1b1d27;box-shadow:0 24px 50px -22px rgba(20,24,40,.45),0 0 0 1px var(--line);position:relative}
+.try-win .tbar{height:42px;background:#eef0f5;display:flex;align-items:center;gap:7px;padding:0 14px;border-bottom:1px solid #dde1ea}
+.try-win .tbar i{width:10px;height:10px;border-radius:50%;background:#c4cad8}
+.try-win .tbar span{flex:1;margin-left:10px;height:26px;border-radius:13px;background:#fff;border:1px solid #d8deec;display:flex;align-items:center;padding:0 12px;font:500 12.5px "JetBrains Mono",monospace;color:#5a6178}
+.try-pg{padding:20px 26px 26px;font:17px/1.6 Georgia,serif}
+.try-pg .meta{font:700 11.5px "Hanken Grotesk",sans-serif;color:#6b7390;letter-spacing:.09em;text-transform:uppercase}
+.try-pg h3{font:700 24px/1.2 "Bricolage Grotesque","Hanken Grotesk",sans-serif;margin:4px 0 12px;color:#14161d}
+.try-pg p{margin:0 0 16px;padding:3px 6px;margin-left:-6px;margin-right:-6px;border-radius:8px;border:2px dashed transparent}
+.t-click.u-paragraph .try-pg p.cp:hover{border-color:#2f5fe8;background:rgba(47,95,232,.06);cursor:pointer}
+.t-click.u-sentence .snt:hover{outline:2px dashed #2f5fe8;outline-offset:1px;background:rgba(47,95,232,.12);border-radius:4px;cursor:pointer}
+.try-pg .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font:15px "Hanken Grotesk",sans-serif;margin-bottom:14px}
+.try-pg .row a{color:#2250d8}
+.try-pg .row button{height:32px;border:1px solid #c9cfdd;border-radius:8px;background:#f4f6fb;padding:0 12px;font:600 13px "Hanken Grotesk",sans-serif;color:#1b1d27;cursor:pointer}
+.mediabox{position:relative;display:inline-block;max-width:100%;line-height:0;margin-top:2px}
+.mediabox img{width:100%;max-width:440px;border-radius:10px;border:1px solid #dde1ea;display:block}
+.mediabox .mo{position:absolute;inset:0;border:2px dashed #2f5fe8;border-radius:10px;display:none;pointer-events:none}
+.mchip{position:absolute;right:10px;top:10px;display:none;align-items:center;gap:6px;height:30px;padding:0 12px 0 9px;border:0;border-radius:99px;background:#2f5fe8;color:#fff;font:600 12.5px "Hanken Grotesk",sans-serif;box-shadow:0 4px 14px rgba(20,30,80,.35);cursor:pointer}
+.mchip svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.t-img .mediabox:hover .mchip,.t-img .mediabox:hover .mo,.t-img .mediabox.busy .mchip,.t-img .mediabox:focus-within .mchip{display:inline-flex}
+.t-img .mediabox:hover .mo{display:block}
+@media (hover:none){.t-img .mediabox .mchip{display:inline-flex}}
+.try-res{margin-top:12px;padding:10px 12px;border-radius:10px;background:#f4f6fb;border:1px solid #e1e5ee;font:14px/1.5 "Hanken Grotesk",sans-serif;color:#2a2d3a;white-space:pre-line;display:none}
+.try-res b{display:block;font:700 11px "Hanken Grotesk",sans-serif;letter-spacing:.09em;text-transform:uppercase;color:#6b7390;margin-bottom:4px}
+.try-res.on{display:block}
+.try-toast{position:absolute;left:50%;bottom:16px;transform:translateX(-50%) translateY(8px);display:flex;align-items:center;gap:9px;max-width:calc(100% - 24px);padding:10px 16px 10px 11px;border-radius:99px;background:#12131c;color:#fff;font:500 14px/1.2 "Hanken Grotesk",sans-serif;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 10px 30px rgba(0,0,0,.35);z-index:5}
+.try-toast.on{opacity:1;transform:translateX(-50%)}
+.try-toast .d{flex:none;width:19px;height:19px;border-radius:50%;background:#2f5fe8;display:grid;place-items:center}
+.try-toast .d svg{width:11px;height:11px;stroke:#fff;fill:none;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.try-toast small{color:#aab1c8;margin-left:6px}
+.try-toast.warn .d{background:#e11d48}
+.try-hint{display:flex;align-items:center;gap:8px;margin:0 0 14px;padding:9px 13px;border-radius:10px;background:#fff7e0;border:1px solid #f3dfa1;font:600 13px "Hanken Grotesk",sans-serif;color:#6b4b00}
+.t-click .try-hint.h1,.t-img .try-hint.h1{display:none}
+.try-ring{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;border:2px solid #2f5fe8;pointer-events:none;opacity:0;z-index:4}
+.try-ring.go{animation:tryring .5s ease-out}
+@keyframes tryring{from{opacity:.9;transform:scale(.3)}to{opacity:0;transform:scale(1.5)}}
+@media (prefers-reduced-motion:reduce){.try-ring.go{animation:none}}
+.try-side .note{margin:12px 2px 0;font-size:13.5px;color:var(--muted);line-height:1.5}
+@media (max-width:900px){.try{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -455,9 +539,9 @@ html.has-cur input,html.has-cur textarea{cursor:text!important}
 
 <header class="nav">
   <div class="in">
-    <a class="brand" href="#top" aria-label="Copyit home"><svg class="mark" aria-hidden="true"><use href="#logo"/></svg>Copyit</a>
+    <a class="brand" href="#top" aria-label="Copyit home"><img class="mark" src="logo.png" alt="" width="32" height="32" decoding="async">Copyit</a>
     <nav class="nav-links" id="navLinks" aria-label="Sections">
-      <a href="#watch">Watch</a><a href="#features">Features</a><a href="#dashboard">Dashboard</a><a href="#share">QR share</a><a href="#privacy">Privacy</a><a href="#install">Install guide</a><a href="#faq">FAQ</a><a href="#install" class="nl-install">Install</a>
+      <a href="#try">Try 1.1</a><a href="#watch">Watch</a><a href="#features">Features</a><a href="#dashboard">Dashboard</a><a href="#share">QR share</a><a href="#privacy">Privacy</a><a href="#install">Install guide</a><a href="#faq">FAQ</a><a href="#install" class="nl-install">Install</a>
     </nav>
     <div class="nav-end">
       <button type="button" class="mode-btn" id="modeBtn" aria-label="Switch between light and dark mode" title="Light / dark"><svg class="i moon"><use href="#moon"/></svg><svg class="i sun"><use href="#sun"/></svg></button>
@@ -490,7 +574,11 @@ html.has-cur input,html.has-cur textarea{cursor:text!important}
       <div class="browser" id="demoBrowser" aria-label="Interactive Copyit popup demo">
         <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">any page you are reading</span></div>
         <div class="pp" id="pp">
-          <div class="pp-top"><svg class="mark" aria-hidden="true"><use href="#logo"/></svg><div class="grow"><h4>Copyit</h4><p id="ppCount">6 saved clips</p></div><button type="button" class="ibtn" id="ppHeart" aria-label="Support Copyit (demo)" aria-expanded="false"><svg class="i"><use href="#heart"/></svg></button></div>
+          <div class="pp-top"><img class="mark" src="logo.png" alt="" width="32" height="32" decoding="async"><div class="grow"><h4>Copyit</h4><p id="ppCount">6 saved clips</p></div><button type="button" class="ibtn" id="ppHeart" aria-label="Support Copyit (demo)" aria-expanded="false"><svg class="i"><use href="#heart"/></svg></button></div>
+<div class="ptbar"><button type="button" class="ptbtn" id="ptBtn" aria-haspopup="true" aria-expanded="false"><svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4l5 14 2.2-5.8L18 10z"/><path d="M13.5 14.5L19 20"/></svg><span class="ptl">Page tools</span><span class="pts" data-pt-state>off</span><svg class="i car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><div class="ptpop" id="ptPop" hidden><div class="pt-row"><span><b>Click to copy</b><small>Hover text, click once. Hold Alt to click normally.</small></span><input type="checkbox" class="sw" data-pt="click" aria-label="Click to copy"></div>
+<div class="pt-opts off"><div class="unit" role="radiogroup" aria-label="What a click copies"><button type="button" role="radio" data-pt-unit="paragraph" aria-checked="true">Paragraph</button><button type="button" role="radio" data-pt-unit="sentence" aria-checked="false">Sentence</button><button type="button" role="radio" data-pt-unit="selection" aria-checked="false">Selection</button></div><label class="mini-row"><input type="checkbox" data-pt="save" checked><span>Also save each copy to my list</span></label></div>
+<div class="pt-sep"></div>
+<div class="pt-row"><span><b>Copy text from images &amp; videos</b><small>Hover a picture or paused video, press Copy text.</small></span><input type="checkbox" class="sw" data-pt="img" aria-label="Copy text from images and videos"></div></div></div>
           <div class="srow"><label class="search"><svg class="i"><use href="#search"/></svg><input id="ppSearch" type="search" placeholder="Search clips, #tags…" autocomplete="off" aria-label="Search demo clips"></label><button type="button" class="mini" id="ppSave"><svg class="i"><use href="#plus"/></svg>Save</button></div>
           <div class="chips" id="ppChips" role="tablist" aria-label="Filter by type"><button type="button" class="chip on" data-f="all" role="tab" aria-selected="true">All</button><button type="button" class="chip" data-f="link" role="tab" aria-selected="false">Links</button><button type="button" class="chip" data-f="code" role="tab" aria-selected="false">Code</button><button type="button" class="chip" data-f="media" role="tab" aria-selected="false">Multimedia</button></div>
           <div class="pp-list" id="ppList" aria-live="polite">
@@ -514,6 +602,35 @@ html.has-cur input,html.has-cur textarea{cursor:text!important}
     <div class="fact"><b>5 KB</b><span>of text or a link opens on a phone by scanning</span></div>
     <div class="fact"><b>2</b><span>modes: Light and Dark, one tap to switch</span></div>
   </div></div>
+</section>
+
+<section class="sec" id="try">
+  <div class="in">
+    <div class="head"><span class="kick">New in 1.1</span><h2>Try the new page tools</h2><p>Two new tools, both off until you switch them on. This is a demo: nothing here leaves your browser.</p></div>
+    <div class="try t-off u-paragraph" id="tryRoot">
+      <div class="try-side">
+        <div class="ptpanel" aria-label="Page tools (demo)"><div class="pt-row"><span><b>Click to copy</b><small>Hover text, click once. Hold Alt to click normally.</small></span><input type="checkbox" class="sw" data-pt="click" aria-label="Click to copy"></div>
+<div class="pt-opts off"><div class="unit" role="radiogroup" aria-label="What a click copies"><button type="button" role="radio" data-pt-unit="paragraph" aria-checked="true">Paragraph</button><button type="button" role="radio" data-pt-unit="sentence" aria-checked="false">Sentence</button><button type="button" role="radio" data-pt-unit="selection" aria-checked="false">Selection</button></div><label class="mini-row"><input type="checkbox" data-pt="save" checked><span>Also save each copy to my list</span></label></div>
+<div class="pt-sep"></div>
+<div class="pt-row"><span><b>Copy text from images &amp; videos</b><small>Hover a picture or paused video, press Copy text.</small></span><input type="checkbox" class="sw" data-pt="img" aria-label="Copy text from images and videos"></div></div>
+        <p class="note">Switch a tool on, then use the page on the right. <b>Click to copy:</b> hover text and click. <b>Copy text from images:</b> hover the picture and press Copy text.</p>
+      </div>
+      <div class="try-win" id="tryWin">
+        <div class="tbar"><i></i><i></i><i></i><span>traveljournal.example/lisbon</span></div>
+        <div class="try-pg" id="tryPg">
+          <div class="try-hint h1">Switch on a tool in Page tools to try it.</div>
+          <div class="meta">Travel notes</div><h3>Planning a trip to Lisbon</h3>
+          <p class="cp" data-block>Lisbon is easy to explore on foot, but the hills are steep. Wear comfortable shoes and plan short walks between the viewpoints.</p>
+          <p class="cp" data-block>The best pastries are baked in small shops near the river. Arrive before nine in the morning, order two, and eat them while they are still warm.</p>
+          <div class="row"><a href="#try" onclick="return false">Further reading</a><button type="button">A button</button><span style="color:#6b7390;font-size:13px">Links and buttons are left alone.</span></div>
+          <div class="mediabox" id="tryMedia"><img src="demo-sign.png" alt="A sale sign with an order number, a price and an email address" width="640" height="300"><span class="mo"></span><button type="button" class="mchip" id="tryChip" aria-label="Copy text from this image"><svg viewBox="0 0 24 24"><path d="M5 7V5h14v2M12 5v14M9 19h6"/></svg>Copy text</button></div>
+          <div class="try-res" id="tryRes" aria-live="polite"><b>Text found in the picture</b><span id="tryResTxt"></span></div>
+        </div>
+        <div class="try-toast" id="tryToast" role="status" aria-live="polite"><span class="d"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span id="tryMsg"></span></div>
+        <div class="try-ring" id="tryRing"></div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <section class="sec" id="watch">
@@ -789,7 +906,7 @@ html.has-cur input,html.has-cur textarea{cursor:text!important}
 
 <footer>
   <div class="in">
-    <div><a class="brand" href="#top"><svg class="mark" aria-hidden="true"><use href="#logo"/></svg>Copyit</a><small>Version 1.0 · Free</small></div>
+    <div><a class="brand" href="#top"><img class="mark" src="logo.png" alt="" width="32" height="32" decoding="async">Copyit</a><small>Version 1.1.0 · Free</small></div>
     <nav aria-label="Footer"><a href="#features">Features</a><a href="#share">QR share</a><a href="#privacy">Privacy</a><a href="#privacy-policy">Privacy policy</a><a href="#install">Install guide</a><a href="#support">Support</a><a href="#faq">FAQ</a></nav>
   </div>
 </footer>
@@ -979,7 +1096,7 @@ html.has-cur input,html.has-cur textarea{cursor:text!important}
   window.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'touch') return; try { start(); } catch (x) { return; } mx = e.clientX; my = e.clientY;
     var t = e.target; root.classList.remove('cur-away');
-    root.classList.toggle('cur-hover', !!(t.closest && t.closest('a,button,[role="tab"],label,summary,[data-copy]')));
+    root.classList.toggle('cur-hover', !!(t.closest && t.closest('a,button,[role="tab"],label,summary,[data-copy],.t-click .cp,.t-click .snt,.sw,.opt')));
     root.classList.toggle('cur-text', !!(t.closest && t.closest('input,textarea')));
     if (t.tagName === 'IFRAME') root.classList.add('cur-away');
     if (hero) {
@@ -1044,6 +1161,74 @@ html.has-cur input,html.has-cur textarea{cursor:text!important}
     document.addEventListener('mouseleave', function () { release(magEl, 'mag'); release(tiltEl, 'tilt'); magEl = tiltEl = null; });
     (function glowLoop() { root.style.setProperty('--gx', mx + 'px'); root.style.setProperty('--gy', my + 'px'); requestAnimationFrame(glowLoop); })();
   }
+})();
+</script>
+
+<script>
+/* v1.1.0 page tools: demo only. One shared state drives the hero dropdown and the Try-it panel. */
+(function () {
+  var T = { click: false, unit: 'paragraph', save: true, img: false };
+  var root = document.getElementById('tryRoot'), toastEl = document.getElementById('tryToast'), msg = document.getElementById('tryMsg'), ring = document.getElementById('tryRing'), win = document.getElementById('tryWin');
+  var calm = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches, timer = 0, busy = false;
+  function qa(s) { return [].slice.call(document.querySelectorAll(s)); }
+  function paint() {
+    qa('[data-pt="click"]').forEach(function (i) { i.checked = T.click; });
+    qa('[data-pt="img"]').forEach(function (i) { i.checked = T.img; });
+    qa('.pt-opts').forEach(function (o) { o.classList.toggle('off', !T.click); });
+    qa('[data-pt-unit]').forEach(function (b) { b.setAttribute('aria-checked', String(b.getAttribute('data-pt-unit') === T.unit)); });
+    qa('[data-pt="save"]').forEach(function (i) { i.checked = T.save; });
+    var n = (T.click ? 1 : 0) + (T.img ? 1 : 0);
+    qa('[data-pt-state]').forEach(function (s) { s.textContent = n ? n + ' on' : 'off'; s.classList.toggle('on', !!n); });
+    if (root) { root.classList.toggle('t-click', T.click); root.classList.toggle('t-img', T.img); root.classList.remove('u-paragraph', 'u-sentence', 'u-selection'); root.classList.add('u-' + T.unit); }
+    if (root) { var h = root.querySelector('.try-hint'); if (h) h.style.display = (T.click || T.img) ? 'none' : ''; }
+  }
+  document.addEventListener('change', function (e) { var k = e.target.getAttribute && e.target.getAttribute('data-pt'); if (k) { T[k] = e.target.checked; paint(); } });
+  document.addEventListener('click', function (e) {
+    var u = e.target.closest && e.target.closest('[data-pt-unit]'); if (u) { T.unit = u.getAttribute('data-pt-unit'); paint(); return; }
+  });
+  var btn = document.getElementById('ptBtn'), pop = document.getElementById('ptPop');
+  if (btn) {
+    btn.addEventListener('click', function (e) { e.stopPropagation(); pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); });
+    document.addEventListener('click', function (e) { if (!pop.hidden && !pop.parentNode.contains(e.target)) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); btn.focus(); } });
+  }
+  paint();
+  if (!root) return;
+  /* split paragraphs into sentences so Sentence mode has something to point at */
+  qa('#tryPg p.cp').forEach(function (p) {
+    var parts = p.textContent.match(/[^.!?]+[.!?]+\s*|[^.!?]+$/g) || [p.textContent];
+    p.textContent = ''; parts.forEach(function (t, i) { var s = document.createElement('span'); s.className = 'snt'; s.setAttribute('data-i', i + 1); s.setAttribute('data-n', parts.length); s.textContent = t; p.appendChild(s); });
+  });
+  function toast(text, note, warn) {
+    msg.textContent = text; if (note) { var s = document.createElement('small'); s.textContent = note; msg.appendChild(s); }
+    toastEl.classList.toggle('warn', !!warn); toastEl.classList.add('on'); clearTimeout(timer); timer = setTimeout(function () { toastEl.classList.remove('on'); }, 2200);
+  }
+  function put(text) { try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).catch(function () {}); } catch (e) {} }
+  function burst(x, y) { if (calm) return; var r = win.getBoundingClientRect(); ring.style.left = (x - r.left) + 'px'; ring.style.top = (y - r.top) + 'px'; ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go'); }
+  function tidy(t) { return t.replace(/\s+/g, ' ').trim(); }
+  document.getElementById('tryPg').addEventListener('click', function (e) {
+    if (!T.click || T.unit === 'selection' || e.altKey || e.detail > 1) return;
+    if (e.target.closest('a,button,.mediabox')) return;
+    var sel = window.getSelection(); if (sel && !sel.isCollapsed) return;
+    var p = e.target.closest('p.cp'); if (!p) return;
+    if (T.unit === 'sentence') { var s = e.target.closest('.snt'); if (!s) return; put(tidy(s.textContent)); toast('Sentence copied', s.getAttribute('data-i') + ' of ' + s.getAttribute('data-n')); }
+    else { put(tidy(p.textContent)); toast('Text copied'); }
+    burst(e.clientX, e.clientY);
+  });
+  document.getElementById('tryPg').addEventListener('mouseup', function (e) {
+    if (!T.click || T.unit !== 'selection' || e.altKey) return;
+    setTimeout(function () { var sel = window.getSelection(); if (!sel || sel.isCollapsed) return; var a = sel.anchorNode && (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentNode); if (!a || !a.closest || !a.closest('#tryPg p.cp')) return; var t = tidy(sel.toString()); if (t) { put(t); toast('Selected text copied'); } }, 40);
+  });
+  var FOUND = 'WEEKEND SALE: 50% OFF\nOrder #48291 ships Monday.\nPrice: \u20ac45.90 \u00a9 2026 Copyit\u2122\nhello@copyit.example';
+  document.getElementById('tryChip').addEventListener('click', function (e) {
+    e.preventDefault(); if (busy) return; busy = true;
+    var box = document.getElementById('tryMedia'); box.classList.add('busy'); toast('Reading text\u2026');
+    setTimeout(function () {
+      busy = false; box.classList.remove('busy'); put(FOUND);
+      document.getElementById('tryResTxt').textContent = FOUND; document.getElementById('tryRes').classList.add('on');
+      toast('Copied ' + FOUND.length + ' characters', 'on your device');
+    }, calm ? 200 : 1100);
+  });
 })();
 </script>
 </body>
