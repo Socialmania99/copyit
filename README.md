@@ -4,7 +4,7 @@
 
 Free Chrome extension. Save text, links, code, images and videos once. Find them forever. Everything stays on your device. No account, no tracking, no server.
 
-**Website:** [https://Socialmania99.github.io/copyit/ ](https://socialmania99.github.io/Copyit/)
+**Website:** [https://socialmania99.com/copyit/](https://socialmania99.com/copyit/)
 
 **Download:** [Releases](https://github.com/Socialmania99/copyit/releases/latest) or [Google Drive](https://drive.google.com/file/d/1RxlnzMSdSZsIr42oWVV7r6P7LsoFYRQT/view?usp=sharing)
 
@@ -13,7 +13,7 @@ Free Chrome extension. Save text, links, code, images and videos once. Find them
   <video src="https://github.com/Socialmania99/Copyit/raw/main/docs/copyit-demo.mp4" controls muted playsinline width="100%"></video>
 </p>
 
-Download, install and every main feature in about 2 minutes. Player not showing? [Watch it on YouTube](https://youtu.be/6jOjqSzReSs) or on the [website](https://socialmania99.github.io/Copyit/#watch).
+Download, install and every main feature in about 2 minutes. Player not showing? [Watch it on YouTube](https://youtu.be/6jOjqSzReSs) or on the [website](https://socialmania99.com/copyit/#watch).
 
 ## Features
 - Save, search, tag and sort clips into folders. Filters: All, Links, Code, Multimedia.
