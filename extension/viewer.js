@@ -72,6 +72,7 @@ function wire(d) {
       body.querySelector('.yt-play').onclick = () => { body.querySelector('.yt').innerHTML = `<iframe src="${esc(d.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`; };
       $('vOpen').hidden = false; $('vDl').hidden = true; $('vCopy').hidden = false; wire(d); return;
     }
+    if (d.type === 'web') { try { if (await chrome.permissions.contains({ origins: ['<all_urls>'] })) await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: [9001], addRules: [{ id: 9001, priority: 1, action: { type: 'modifyHeaders', responseHeaders: [{ header: 'x-frame-options', operation: 'remove' }, { header: 'content-security-policy', operation: 'remove' }, { header: 'content-security-policy-report-only', operation: 'remove' }] }, condition: { resourceTypes: ['sub_frame'], initiatorDomains: [chrome.runtime.id] } }] }); } catch { } }
     body.innerHTML = d.type === 'video' ? `<video src="${esc(d.src)}" controls autoplay loop playsinline></video>`
       : d.type === 'pdf' ? `<iframe src="${esc(d.src)}"></iframe>`
       : d.type === 'web' ? `<iframe sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" src="${esc(d.src)}"></iframe><div class="lb-note">Some sites block being shown here. Use “Open in new tab”.</div>`

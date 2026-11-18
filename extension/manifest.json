@@ -3,7 +3,7 @@
   "name": "Copyit",
   "version": "1.1.0",
   "minimum_chrome_version": "109",
-  "description": "Copyit — save text, links, code, rich text and images you copy. Click any text to copy it, copy text out of images and videos, search, tag and back up locally.",
+  "description": "Copyit \u2014 save text, links, code, rich text and images you copy. Click any text to copy it, copy text out of images and videos, search, tag and back up locally.",
   "permissions": [
     "storage",
     "unlimitedStorage",
@@ -13,7 +13,8 @@
     "downloads",
     "activeTab",
     "scripting",
-    "offscreen"
+    "offscreen",
+    "declarativeNetRequestWithHostAccess"
   ],
   "optional_host_permissions": [
     "<all_urls>"

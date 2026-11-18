@@ -6,6 +6,8 @@
 - **Right-click on pictures and videos.** On any website: Copy image directly (straight to the clipboard), Copy video frame as image, and Preview in Copyit. "Save image address to Copyit" stays as it was. Inside Copyit, right-click a saved picture or video to get Preview, Copy image and the other copy options.
 - Edit mode in the preview window has **Find** (Ctrl+F): type a word, see every match highlighted with a count, step with Enter or the arrows, and turn on match case.
 - Web links in the preview window now run the page's scripts, so more sites show. Pages that need a sign-in or refuse to be framed (for example Google Docs) still need Open in new tab.
+- **Preview window: drag the corner to resize** (up to full desktop size) and a **mobile / desktop** switch button next to the close button. Mobile is a vertical window, desktop is a wide landscape window. Your choice is remembered.
+- **Website links now open in the preview window.** Copyit lifts the "do not show in a frame" block for its own preview frame only. Chrome asks once to allow website access (only when you press Allow website previews). New permission `declarativeNetRequestWithHostAccess`, which shows no extra install warning.
 - The expand button and Settings now open one dashboard tab only. If it is already open, Copyit switches to it.
 - Chrome asks once for permission to work on websites, only when you switch a page tool on. Turning both off gives the permission back.
 - New permissions: `activeTab`, `scripting`, `offscreen`, optional access to all sites. No change to the install warning.

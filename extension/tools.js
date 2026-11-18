@@ -63,7 +63,8 @@
       } else {
         await patch({ [key]: false });
         const s2 = await load();
-        if (!s2.clickCopy && !s2.imgText) { try { await chrome.permissions.remove(ALL); } catch { } }
+        let keep = false; try { keep = !!(await chrome.storage.local.get('copyitPreviewWeb')).copyitPreviewWeb; } catch { }
+        if (!s2.clickCopy && !s2.imgText && !keep) { try { await chrome.permissions.remove(ALL); } catch { } }
       }
       paint(await load()); sync();
     }

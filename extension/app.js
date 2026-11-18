@@ -1198,6 +1198,43 @@ if (isDash) {
 }
 
 
+/* ───────────── preview window: size, mobile/desktop view, website frames ───────────── */
+const VSIZE = { desktop: { media: [980, 660], text: [780, 540] }, mobile: { media: [400, 760], text: [400, 620] } };
+let vwView = 'desktop'; try { if (localStorage.getItem('copyitViewMode') === 'mobile') vwView = 'mobile'; } catch { }
+function vwSize() {
+  const dlg = $('viewDialog'), cat = vwMedia ? 'media' : 'text', [bw, bh] = VSIZE[vwView][cat];
+  const w = Math.min(bw, innerWidth - 24), h = Math.min(bh, innerHeight - 24);
+  dlg.style.width = w + 'px'; dlg.style.height = h + 'px';
+  dlg.classList.add('sized'); dlg.style.inset = 'auto';                   // fixed corner, so dragging the handle grows it from the top-left
+  dlg.style.left = Math.max(8, Math.round((innerWidth - w) / 2)) + 'px'; dlg.style.top = Math.max(8, Math.round((innerHeight - h) / 2)) + 'px';
+  dlg.classList.toggle('mobile', vwView === 'mobile');
+  const b = $('vwMode'); b.title = vwView === 'mobile' ? 'Switch to desktop view (landscape)' : 'Switch to mobile view (vertical)';
+}
+$('vwMode')?.addEventListener('click', () => { vwView = vwView === 'mobile' ? 'desktop' : 'mobile'; try { localStorage.setItem('copyitViewMode', vwView); } catch { } vwSize(); });
+try {                                                                       // keep the window on screen while it is dragged bigger
+  new ResizeObserver(() => { const d = $('viewDialog'); if (!d.open) return; const r = d.getBoundingClientRect(); if (r.right > innerWidth - 8) d.style.left = Math.max(8, innerWidth - 8 - r.width) + 'px'; if (r.bottom > innerHeight - 8) d.style.top = Math.max(8, innerHeight - 8 - r.height) + 'px'; }).observe($('viewDialog'));
+} catch { }
+const FRAME_RULE = 9001;
+async function allowFraming() {              // pages may be shown in Copyit's own preview frames only
+  try {
+    await chrome.declarativeNetRequest.updateSessionRules({ removeRuleIds: [FRAME_RULE], addRules: [{ id: FRAME_RULE, priority: 1, action: { type: 'modifyHeaders', responseHeaders: [{ header: 'x-frame-options', operation: 'remove' }, { header: 'content-security-policy', operation: 'remove' }, { header: 'content-security-policy-report-only', operation: 'remove' }] }, condition: { resourceTypes: ['sub_frame'], initiatorDomains: [chrome.runtime.id] } }] });
+    return true;
+  } catch { return false; }
+}
+async function loadWebFrame(url) {
+  const body = $('vwBody'), mk = () => { const f = body.querySelector('iframe.vw-frame'); if (f && !f.src) f.src = url; };
+  let has = false; try { has = await chrome.permissions.contains({ origins: ['<all_urls>'] }); } catch { }
+  if (has && await allowFraming()) { mk(); return; }
+  body.innerHTML = `<div class="vw-allow"><h3>Show this website here?</h3><p>Many websites refuse to open inside another page. To show them in this window, Copyit asks Chrome for access to websites. It only lifts that block for the preview frame. It does not read your pages.</p><button type="button" class="btn primary sm" id="vwAllow">Allow website previews</button> <button type="button" class="btn sm" id="vwAllowOpen">Open in new tab</button></div>`;
+  $('vwAllowOpen').onclick = () => chrome.tabs.create({ url });
+  $('vwAllow').onclick = async () => {
+    let ok = false; try { ok = await chrome.permissions.request({ origins: ['<all_urls>'] }); } catch { }
+    if (!ok) { toast('Permission not given. Use Open in new tab.', 'err'); return; }
+    try { await chrome.storage.local.set({ copyitPreviewWeb: true }); } catch { }
+    if (vwMedia && vwItem) { vwRender(vwItem); }
+  };
+}
+
 /* ───────────── preview window: read a text clip, edit it, discard or save ───────────── */
 let vwItem = null;
 const vwKind = x => kindOf(x);
@@ -1207,7 +1244,7 @@ function mediaHtml(d) {
   return d.type === 'video' ? `<video src="${esc(d.src)}" controls autoplay loop playsinline></video>`
     : d.type === 'embed' ? `<iframe class="vw-frame" src="${esc(d.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><p class="vw-hint">Video not playing? <a href="${esc(d.openUrl || d.src)}" target="_blank" rel="noopener noreferrer">Watch it on the original site</a></p>`
     : d.type === 'pdf' ? `<iframe class="vw-frame" src="${esc(d.src)}"></iframe>`
-    : d.type === 'web' ? `<iframe class="vw-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" src="${esc(d.src)}"></iframe><p class="vw-hint">Pages that need you to sign in (like Google Docs) or that block previews will not show here. Use Open in new tab.</p>`
+    : d.type === 'web' ? `<iframe class="vw-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe><p class="vw-hint">Pages that need you to sign in, like Google Docs, may not show here. Use Open in new tab.</p>`
     : `<img alt="" src="${esc(d.src)}" onerror="this.replaceWith(Object.assign(document.createElement('p'),{textContent:'Could not load this file.'}))">`;
 }
 function vwRender(x) {
@@ -1219,6 +1256,7 @@ function vwRender(x) {
   if (d) {
     const u = c.trim();
     body.innerHTML = mediaHtml(d) + (k === 'link' ? `<div class="vw-url"><a class="vw-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a></div>` : '');
+    if (d.type === 'web') loadWebFrame(d.src);
     const v = body.querySelector('video'); if (v) v.play().catch(() => { v.muted = true; v.play().catch(() => { }); });
   } else if (k === 'rich' && x.html) {
     body.innerHTML = '<iframe class="vw-rich" sandbox="" referrerpolicy="no-referrer"></iframe>';
@@ -1246,7 +1284,7 @@ async function openViewer(x) {
   if (!text || k === 'link') { try { vwMedia = await describeMedia(x); } catch (err) { toast(err.message, 'err'); if (!text) return; } }
   if (!text && !vwMedia) return;
   vwItem = x; vwRender(x); vwMode(false);
-  const dlg = $('viewDialog'); if (!dlg.open) dlg.showModal();
+  const dlg = $('viewDialog'); if (!dlg.open) { dlg.showModal(); vwSize(); }
 }
 function vwDiscard() { vwMode(false); $('vwEdit').value = ''; }
 async function vwSave() {
@@ -1264,7 +1302,7 @@ async function vwSave() {
   vwRender(x); vwMode(false);
 }
 $('vwX')?.addEventListener('click', () => $('viewDialog').close());
-$('viewDialog')?.addEventListener('click', e => { if (e.target === $('viewDialog')) $('viewDialog').close(); });
+$('viewDialog')?.addEventListener('click', e => { const d = $('viewDialog'); if (e.target !== d) return; const r = d.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close(); });   // outside click only, not the resize handle
 $('viewDialog')?.addEventListener('cancel', e => { if (!$('vwEditWrap').hidden) { e.preventDefault(); vwDiscard(); } });   // Esc while editing = discard
 $('vwEditBtn')?.addEventListener('click', () => { $('vwEdit').value = vwItem.content; vwMode(true); const t = $('vwEdit'); t.focus(); t.setSelectionRange(t.value.length, t.value.length); });
 $('vwDiscard')?.addEventListener('click', vwDiscard);

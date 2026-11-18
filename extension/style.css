@@ -803,3 +803,20 @@ h3.tt{margin:10px 0 2px;font-size:13px;font-weight:700}
 .vw-find .vw-cnt{font-size:12px;opacity:.75;min-width:54px;text-align:center}
 .vw-find .btn.on{background:var(--accent);color:#fff}
 .vw-find[hidden]{display:none!important}
+
+/* preview window: drag to resize, mobile and desktop views, website frames */
+#viewDialog{resize:both;overflow:hidden;box-sizing:border-box;min-width:340px;min-height:280px;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px)}
+#viewDialog .vw-body{flex:1 1 auto;min-height:0;max-height:none}
+#viewDialog.sized{margin:0}
+.vw-body.media{min-height:0}
+.vw-body.media img,.vw-body.media video{flex:0 1 auto;min-height:0;max-width:100%;max-height:100%;object-fit:contain}
+.vw-body.media .vw-frame{flex:1 1 auto;width:100%;height:auto;min-height:220px}
+.vw-body iframe.vw-rich{height:100%;min-height:200px}
+#viewDialog .vw-editwrap{flex:1 1 auto;min-height:120px}
+#viewDialog .vw-editwrap .vw-edit{height:100%;max-height:none;min-height:0;resize:none;width:100%}
+#viewDialog .dlg-foot,#viewDialog .vw-head,#viewDialog .vw-find,#viewDialog .vw-note{flex:none}
+.vw-allow{margin:auto;max-width:420px;text-align:center;padding:18px 12px}
+.vw-allow h3{margin:0 0 6px;font-size:15px}
+.vw-allow p{margin:0 0 12px;font-size:12.5px;opacity:.8;line-height:1.55}
+#vwMode svg{width:18px;height:18px}
+#viewDialog.mobile #vwMode{color:var(--accent)}
