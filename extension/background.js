@@ -8,6 +8,9 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({ id: 'save-link', title: 'Save link address to Copyit', contexts: ['link'] });
     chrome.contextMenus.create({ id: 'save-image-url', title: 'Save image address to Copyit', contexts: ['image'] });
     chrome.contextMenus.create({ id: 'save-page-url', title: 'Save page address to Copyit', contexts: ['page'] });
+    chrome.contextMenus.create({ id: 'copy-image', title: 'Copy image directly (Copyit)', contexts: ['image'] });
+    chrome.contextMenus.create({ id: 'copy-frame', title: 'Copy video frame as image (Copyit)', contexts: ['video'] });
+    chrome.contextMenus.create({ id: 'preview-media', title: 'Preview in Copyit', contexts: ['image', 'video'] });
     chrome.contextMenus.create({ id: 'ocr-media', title: 'Copy text from this image or video', contexts: ['image', 'video'] });
   });
   syncScripts();
@@ -16,6 +19,8 @@ chrome.runtime.onStartup.addListener(syncScripts);
 
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === 'ocr-media') { ocrFromMenu(info, tab); return; }
+  if (info.menuItemId === 'copy-image' || info.menuItemId === 'copy-frame') { mediaFromMenu(info, tab, info.menuItemId === 'copy-frame' ? 'frame' : 'image'); return; }
+  if (info.menuItemId === 'preview-media') { previewFromMenu(info, tab); return; }
   const text = { 'save-selected-text': info.selectionText, 'save-link': info.linkUrl, 'save-image-url': info.srcUrl, 'save-page-url': info.pageUrl || tab?.url }[info.menuItemId];
   if (!text) return;
   await enqueue(() => saveEntry({ content: text, source: 'context-menu' }));
@@ -145,3 +150,28 @@ async function ocrFromMenu(info, tab) {         // right-click on an image or vi
   const result = await runOcr(tab, found.rect, found.viewW, found.viewH);
   chrome.tabs.sendMessage(tab.id, { target: 'page', type: 'OCR_RESULT', result }).catch(() => { });
 }
+
+// Right-click on an image or video: copy it straight to the clipboard, or preview it in a small window.
+async function pageMsg(tab, msg) { try { await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['content.js'] }); await chrome.tabs.sendMessage(tab.id, { target: 'page', ...msg }); } catch { } }
+async function mediaFromMenu(info, tab, mode) {
+  if (!tab || tab.id == null) return;
+  await pageMsg(tab, { type: 'MEDIA_COPY', srcUrl: info.srcUrl || '', mode });
+}
+async function previewFromMenu(info, tab) {
+  const u = info.srcUrl || '';
+  if (!/^(https?:|data:)/i.test(u)) { if (tab && tab.id != null) await pageMsg(tab, { type: 'MEDIA_MSG', text: 'This file cannot be previewed', note: 'It has no public address. Use Copy image instead.' }); return; }
+  const W = 560, H = 500;
+  let left, top;
+  try { const w = await chrome.windows.getCurrent(); left = Math.round((w.left || 0) + ((w.width || 1000) - W) / 2); top = Math.round((w.top || 0) + ((w.height || 700) - H) / 3); } catch { }
+  chrome.windows.create({ url: chrome.runtime.getURL('viewer.html?url=' + encodeURIComponent(u)), type: 'popup', width: W, height: H, left, top });
+}
+async function fetchMedia(url) {                 // used when the page itself may not read a picture (other site, no CORS)
+  if (!/^https?:/i.test(url)) throw new Error('not a web address');
+  const r = await fetch(url, { credentials: 'omit' }); if (!r.ok) throw new Error('HTTP ' + r.status);
+  const buf = await r.arrayBuffer(); if (buf.byteLength > 25 * 1048576) throw new Error('too large');
+  let bin = '', a = new Uint8Array(buf); for (let i = 0; i < a.length; i += 0x8000) bin += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000));
+  return 'data:' + (r.headers.get('content-type') || 'image/png').split(';')[0] + ';base64,' + btoa(bin);
+}
+chrome.runtime.onMessage.addListener((m, _s, send) => {
+  if (m && m.type === 'FETCH_MEDIA') { fetchMedia(m.url).then(dataUrl => send({ ok: true, dataUrl })).catch(e => send({ ok: false, error: String(e && e.message || e) })); return true; }
+});

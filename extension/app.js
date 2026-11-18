@@ -104,6 +104,7 @@ const TYPES = {
 };
 const TYPE_ORDER = ['text', 'link', 'code', 'json', 'csv', 'markdown', 'svg', 'image', 'video', 'datauri', 'rich'];
 const isMediaKind = (x, k) => (k === 'link' && (MEDIA_URL.test(String(x.content || '').trim()) || !!videoEmbed(String(x.content || '')))) || k === 'image' || k === 'video' || k === 'svg' || (k === 'datauri' && /^(image|video)\/|^application\/pdf$/.test(dataUriMime(String(x.content || ''))));
+const VIEW_KINDS = ['text', 'link', 'code', 'rich', 'json', 'csv', 'markdown'];
 const canPreview = (x, k) => isMediaKind(x, k) || (k === 'link' && /^https?:\/\//i.test(String(x.content || '').trim()));
 const hasBlob = x => BLOB_KINDS.includes(x.kind);
 const MEDIA_URL = /^https?:\/\/\S+\.(png|jpe?g|gif|webp|avif|bmp|svg|ico|mp4|webm|mov|m4v|ogv|pdf)(\?\S*)?(#\S*)?$/i;
@@ -289,7 +290,7 @@ function entryHtml(x, q, delay, isNew) {
       <div class="pv${blur ? ' blurred' : ''}">${previewHtml(x, kind, q)}${blur ? `<button class="reveal" data-action="reveal">${ICON.eye}Reveal</button>` : ''}</div>
       ${tags ? `<div class="tags">${tags}</div>` : ''}
       ${long ? '<button class="more" data-action="toggle">Show more</button>' : ''}
-      ${canPreview(x, kind) ? `<div class="pvrow"><button class="btn sm pvbtn" data-action="preview" title="Open a preview in a small window">${ICON.eye}<span>Preview</span></button></div>` : ''}
+      ${VIEW_KINDS.includes(kind) || canPreview(x, kind) ? `<div class="pvrow"><button class="btn sm pvbtn" data-action="view" title="Preview this clip in a window${VIEW_KINDS.includes(kind) ? ', edit it and save changes' : ''}">${ICON.eye}<span>Preview</span></button></div>` : ''}
       <div class="entry-foot">
         <span class="stat-line">${esc(statLine(x, kind))}</span>
         <span class="spacer"></span>
@@ -663,9 +664,10 @@ function actionsFor(x, kind) {
 /* "Copy as…" popover */
 let menuEl = null;
 function closeMenu() { menuEl?.remove(); menuEl = null; }
-function openMenu(btn, x) {
+function openMenu(btn, x, pt) {
   closeMenu();
   const acts = actionsFor(x, kindOf(x));
+  if (pt) acts.unshift({ label: 'Preview', run: async () => { if (isDash) openViewer(x); else openDashboard({ view: x.id }); return 'Preview opened'; } });
   const nCopy = acts.length;
   folders.forEach(f => acts.push({ label: f.name, folder: true, on: x.folder === f.id, run: async () => { await setFolder(x, f.id); return `Moved to “${f.name}”`; } }));
   if (folderOf(x)) acts.push({ label: 'Remove from folder', folder: true, icon: 'close', run: async () => { await setFolder(x, ''); return 'Removed from folder'; } });
@@ -673,7 +675,7 @@ function openMenu(btn, x) {
   menuEl = document.createElement('div'); menuEl.className = 'menu-pop'; menuEl.setAttribute('role', 'menu');
   menuEl.innerHTML = `<div class="mp-title">Copy as</div>` + acts.map((a, i) => `${i === nCopy ? '<div class="mp-title">Move to folder</div>' : ''}<button role="menuitem" data-i="${i}" class="${a.on ? 'on' : ''}">${a.folder ? (ICON[a.icon] || ICON.folder) : a.label.startsWith('Download') ? ICON.download : ICON.copy}<span>${esc(a.label)}</span></button>`).join('');
   document.body.append(menuEl);
-  const r = btn.getBoundingClientRect(), mw = menuEl.offsetWidth, mh = menuEl.offsetHeight;
+  const r = pt ? { left: pt.x, right: pt.x, top: pt.y, bottom: pt.y } : btn.getBoundingClientRect(), mw = menuEl.offsetWidth, mh = menuEl.offsetHeight;
   menuEl.style.left = Math.max(8, Math.min(r.right - mw, innerWidth - mw - 8)) + 'px';
   menuEl.style.top = (r.bottom + 6 + mh > innerHeight - 8 ? Math.max(8, r.top - mh - 6) : r.bottom + 6) + 'px';
   menuEl.addEventListener('click', async e => {
@@ -683,6 +685,12 @@ function openMenu(btn, x) {
   });
   menuEl.querySelector('button')?.focus();
 }
+$('list')?.addEventListener('contextmenu', e => {          // right-click a picture or video: copy / preview menu
+  const art = e.target.closest('.entry'); if (!art || e.target.closest('textarea,input')) return;
+  const x = entries.find(i => i.id === art.dataset.id); if (!x) return;
+  const k = kindOf(x); if (!(isMediaKind(x, k) && canPreview(x, k))) return;
+  e.preventDefault(); openMenu(null, x, { x: e.clientX, y: e.clientY });
+});
 document.addEventListener('click', e => { if (menuEl && !e.target.closest('.menu-pop') && !e.target.closest('[data-action=menu]')) closeMenu(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
 $('list')?.addEventListener('scroll', closeMenu);
@@ -823,7 +831,7 @@ async function describeMedia(x) {
   const kind = kindOf(x), c = String(x.content || '').trim();
   if (kind === 'link') {
     const url = safeUrl(c.split(/\s+/)[0]); if (!url) return null;
-    const em = videoEmbed(url), t = urlKind(url); return { type: t, src: em ? em.embed : url, thumb: em && em.thumb, openUrl: em ? em.watch : url, title: domainOf(url) || url, sub: url, copy: url };
+    const em = videoEmbed(url), t = urlKind(url); return { type: t, src: em ? (em.player || em.embed) : url, thumb: em && em.thumb, openUrl: em ? em.watch : url, title: domainOf(url) || url, sub: url, copy: url };
   }
   if (kind === 'image') { const u = await getBlob(x.id); if (!u) throw new Error('The full-size image is missing'); return { type: 'image', src: u, blob: () => dataUrlToBlob(u), name: `copyit-image.${(x.image.mime.split('/')[1] || 'png').replace('jpeg', 'jpg')}`, title: 'Image', sub: statLine(x, kind), img: true }; }
   if (kind === 'video') { const u = await getBlob(x.id); if (!u) throw new Error('The video data is missing'); const b = dataUrlToBlob(u); return { type: 'video', src: URL.createObjectURL(b), blob: () => b, name: `copyit-video.${(x.image.mime.split('/')[1] || 'mp4').replace('quicktime', 'mov')}`, title: 'Video', sub: statLine(x, kind) }; }
@@ -866,13 +874,13 @@ async function openLightbox(x) {
   body.innerHTML = d.type === 'video' ? `<video src="${esc(d.src)}" controls autoplay loop playsinline></video>`
     : d.type === 'embed' ? `<iframe src="${esc(d.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
     : d.type === 'pdf' ? `<iframe src="${esc(d.src)}"></iframe>`
-    : d.type === 'web' ? `<iframe sandbox="allow-same-origin" referrerpolicy="no-referrer" src="${esc(d.src)}"></iframe><div class="lb-note">Some sites block being shown here. Use “Open in new tab”.</div>`
+    : d.type === 'web' ? `<iframe sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" src="${esc(d.src)}"></iframe><div class="lb-note">Some sites block being shown here. Use “Open in new tab”.</div>`
     : `<img alt="" src="${esc(d.src)}" onerror="this.replaceWith(Object.assign(document.createElement('p'),{textContent:'Could not load this file.'}))">`;
   lb.showModal();
 }
 $('list')?.addEventListener('click', e => {                         // the picture itself also opens the preview
   const w = e.target.closest('.imgwrap[data-peek]'); if (!w || e.target.closest('button, a')) return;
-  const x = entries.find(i => i.id === w.closest('.entry')?.dataset.id); if (x) openPreview(x);
+  const x = entries.find(i => i.id === w.closest('.entry')?.dataset.id); if (x) (isDash ? openViewer(x) : openDashboard({ view: x.id }));
 });
 async function openPreview(x) {                                       // small window; falls back to an in-page viewer
   if (chrome.windows?.create) {
@@ -1096,7 +1104,30 @@ $('tagBar')?.addEventListener('click', e => {
 $('search')?.addEventListener('input', render);
 $('saveClipboard')?.addEventListener('click', saveClipboard);
 document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', openAdd));
-$('openDashboard')?.addEventListener('click', () => chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html') }));
+$('webBtn')?.addEventListener('click', () => chrome.tabs.create({ url: 'https://www.socialmania99.com/' }));
+// Open the dashboard once: focus a tab that already has it, otherwise create one.
+const DASH_URL = chrome.runtime.getURL('dashboard.html');
+async function openDashboard(opts = {}) {
+  let tab = null;
+  try { tab = (await chrome.tabs.query({ url: DASH_URL + '*' }))[0] || null; } catch {}
+  if (!tab) {
+    try {
+      const { dashTab } = await chrome.storage.session.get('dashTab');
+      if (dashTab) { const t = await chrome.tabs.get(dashTab); if (t && (!t.url || t.url.startsWith(DASH_URL))) tab = t; }
+    } catch {}
+  }
+  if (tab) {
+    try { await chrome.tabs.update(tab.id, { active: true }); } catch { tab = null; }
+    if (tab) {
+      try { await chrome.windows.update(tab.windowId, { focused: true }); } catch {}
+      if (opts.settings) { try { await chrome.runtime.sendMessage({ type: 'dashSettings' }); } catch {} }
+      if (opts.view) { try { await chrome.runtime.sendMessage({ type: 'dashView', id: opts.view }); } catch {} }
+    }
+  }
+  if (!tab) await chrome.tabs.create({ url: DASH_URL + (opts.settings ? '#settings' : opts.view ? '#view=' + encodeURIComponent(opts.view) : '') });
+  if (!isDash) window.close();
+}
+$('openDashboard')?.addEventListener('click', () => openDashboard());
 $('exportJson')?.addEventListener('click', exportJson);
 $('exportCsv')?.addEventListener('click', exportCsv);
 $('exportTxt')?.addEventListener('click', exportTxt);
@@ -1166,6 +1197,123 @@ if (isDash) {
   addEventListener('drop', async e => { e.preventDefault(); depth = 0; dz.classList.remove('show'); for (const f of [...e.dataTransfer.files]) await handleDroppedFile(f); });
 }
 
+
+/* ───────────── preview window: read a text clip, edit it, discard or save ───────────── */
+let vwItem = null;
+const vwKind = x => kindOf(x);
+function viewById(id) { const x = entries.find(i => i.id === id); if (x) openViewer(x); else toast('That clip no longer exists.', 'err'); }
+let vwMedia = null;
+function mediaHtml(d) {
+  return d.type === 'video' ? `<video src="${esc(d.src)}" controls autoplay loop playsinline></video>`
+    : d.type === 'embed' ? `<iframe class="vw-frame" src="${esc(d.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><p class="vw-hint">Video not playing? <a href="${esc(d.openUrl || d.src)}" target="_blank" rel="noopener noreferrer">Watch it on the original site</a></p>`
+    : d.type === 'pdf' ? `<iframe class="vw-frame" src="${esc(d.src)}"></iframe>`
+    : d.type === 'web' ? `<iframe class="vw-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" src="${esc(d.src)}"></iframe><p class="vw-hint">Pages that need you to sign in (like Google Docs) or that block previews will not show here. Use Open in new tab.</p>`
+    : `<img alt="" src="${esc(d.src)}" onerror="this.replaceWith(Object.assign(document.createElement('p'),{textContent:'Could not load this file.'}))">`;
+}
+function vwRender(x) {
+  const k = vwKind(x), c = String(x.content || ''), body = $('vwBody'), d = vwMedia, text = VIEW_KINDS.includes(k);
+  $('vwTile').innerHTML = ICON[k] || ICON.text;
+  $('vwTitle').textContent = d ? d.title : (TYPES[k]?.label || 'Text').replace(/s$/, '') + ' clip';
+  $('vwSub').textContent = `${srcOf(x).label} · ${dateText(x.copiedAt || x.createdAt)} · ${statLine(x, k)}`.replace(/^ · /, '');
+  body.classList.toggle('media', !!d); body.classList.toggle('checker', !!d && d.type === 'svg');
+  if (d) {
+    const u = c.trim();
+    body.innerHTML = mediaHtml(d) + (k === 'link' ? `<div class="vw-url"><a class="vw-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a></div>` : '');
+    const v = body.querySelector('video'); if (v) v.play().catch(() => { v.muted = true; v.play().catch(() => { }); });
+  } else if (k === 'rich' && x.html) {
+    body.innerHTML = '<iframe class="vw-rich" sandbox="" referrerpolicy="no-referrer"></iframe>';
+    body.firstChild.srcdoc = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https:; style-src 'unsafe-inline'"><base target="_blank"><body style="font:14px/1.6 system-ui,sans-serif;color:#222;margin:12px">${x.html}</body>`;
+  } else if (k === 'markdown') body.innerHTML = `<div class="entry-text md">${mdToHtml(c)}</div>`;
+  else if (k === 'link') { const u = c.trim(), ok = /^https?:\/\//i.test(u); body.innerHTML = ok ? `<a class="vw-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a>` : `<div class="vw-text">${esc(c)}</div>`; }
+  else if (k === 'json') { const j = jsonInfo(c); body.innerHTML = `<pre class="vw-code">${esc(j ? j.pretty : c)}</pre>`; }
+  else if (k === 'code' || k === 'csv') body.innerHTML = `<pre class="vw-code">${esc(c)}</pre>`;
+  else body.innerHTML = `<div class="vw-text">${esc(c)}</div>`;
+  const isLink = k === 'link' && /^https?:\/\//i.test(c.trim());
+  $('vwOpen').hidden = !(isLink || (d && (d.openUrl || d.blob))); $('vwLive').hidden = true;
+  $('vwDl').hidden = !(d && d.blob && d.type !== 'web');
+  $('vwEditBtn').hidden = !text;
+}
+function vwMode(edit) {
+  if (edit && !VIEW_KINDS.includes(vwKind(vwItem))) return;
+  $('vwBody').hidden = edit; $('vwEditWrap').hidden = !edit; if (!edit) fClose();
+  $('vwViewFoot').hidden = edit; $('vwEditFoot').hidden = !edit;
+  const note = $('vwNote'); note.hidden = !(edit && vwKind(vwItem) === 'rich'); note.textContent = 'Editing converts this clip to plain text.';
+}
+async function openViewer(x) {
+  if (!x) return;
+  const k = vwKind(x), text = VIEW_KINDS.includes(k);
+  vwMedia = null;
+  if (!text || k === 'link') { try { vwMedia = await describeMedia(x); } catch (err) { toast(err.message, 'err'); if (!text) return; } }
+  if (!text && !vwMedia) return;
+  vwItem = x; vwRender(x); vwMode(false);
+  const dlg = $('viewDialog'); if (!dlg.open) dlg.showModal();
+}
+function vwDiscard() { vwMode(false); $('vwEdit').value = ''; }
+async function vwSave() {
+  const x = vwItem; if (!x) return;
+  const text = $('vwEdit').value.trim();
+  if (!text) { toast('Text cannot be empty.', 'err'); return; }
+  if (text !== x.content) {
+    x.content = text; x.updatedAt = new Date().toISOString();
+    delete x.html; delete x.kind; delete x.lang;
+    x.kind = detectKind(text); if (x.kind === 'code') x.lang = languageOf(text);
+    kindCache.delete(x);
+    await persist(); toast('Changes saved');
+  } else toast('No changes to save');
+  vwMedia = null; if (vwKind(x) === 'link') { try { vwMedia = await describeMedia(x); } catch { } }
+  vwRender(x); vwMode(false);
+}
+$('vwX')?.addEventListener('click', () => $('viewDialog').close());
+$('viewDialog')?.addEventListener('click', e => { if (e.target === $('viewDialog')) $('viewDialog').close(); });
+$('viewDialog')?.addEventListener('cancel', e => { if (!$('vwEditWrap').hidden) { e.preventDefault(); vwDiscard(); } });   // Esc while editing = discard
+$('vwEditBtn')?.addEventListener('click', () => { $('vwEdit').value = vwItem.content; vwMode(true); const t = $('vwEdit'); t.focus(); t.setSelectionRange(t.value.length, t.value.length); });
+$('vwDiscard')?.addEventListener('click', vwDiscard);
+$('vwSave')?.addEventListener('click', vwSave);
+$('vwEdit')?.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); vwSave(); } });
+/* find words while editing */
+let fIdx = 0, fCase = false, fMatches = [];
+const fOpen = () => !$('vwFind').hidden;
+function fRender(scroll) {
+  const ta = $('vwEdit'), hl = $('vwHl'), q = $('vwFindIn').value, t = ta.value;
+  fMatches = [];
+  if (q) { const h = fCase ? t : t.toLowerCase(), n = fCase ? q : q.toLowerCase(); let i = 0; while ((i = h.indexOf(n, i)) !== -1) { fMatches.push(i); i += n.length; } }
+  if (fIdx >= fMatches.length) fIdx = 0;
+  let out = '', p = 0; fMatches.forEach((s, k) => { out += esc(t.slice(p, s)) + `<mark${k === fIdx ? ' class="cur"' : ''}>${esc(t.slice(s, s + q.length))}</mark>`; p = s + q.length; });
+  hl.innerHTML = out + esc(t.slice(p)) + '\n';
+  $('vwFindCnt').textContent = q ? (fMatches.length ? `${fIdx + 1} / ${fMatches.length}` : 'No match') : '';
+  hl.scrollTop = ta.scrollTop;
+  if (scroll && fMatches.length) {
+    const m = hl.querySelector('mark.cur'); if (m) { ta.scrollTop = Math.max(0, m.offsetTop - ta.clientHeight / 2); hl.scrollTop = ta.scrollTop; }
+    ta.setSelectionRange(fMatches[fIdx], fMatches[fIdx] + q.length);
+  }
+}
+function fShow() {
+  const ta = $('vwEdit'), sel = ta.value.slice(ta.selectionStart, ta.selectionEnd);
+  $('vwFind').hidden = false; $('vwFindBtn').classList.add('on');
+  if (sel && !sel.includes('\n')) $('vwFindIn').value = sel;
+  $('vwFindIn').focus(); $('vwFindIn').select(); fRender(!!$('vwFindIn').value);
+}
+function fClose() { if (!fOpen()) return; $('vwFind').hidden = true; $('vwFindBtn').classList.remove('on'); $('vwHl').innerHTML = ''; fMatches = []; }
+function fStep(d) { if (!fMatches.length) return; fIdx = (fIdx + d + fMatches.length) % fMatches.length; fRender(true); }
+$('vwFindBtn')?.addEventListener('click', () => (fOpen() ? ($('vwFindIn').focus(), $('vwFindIn').select()) : fShow()));
+$('vwFindX')?.addEventListener('click', () => { fClose(); $('vwEdit').focus(); });
+$('vwFindNext')?.addEventListener('click', () => fStep(1));
+$('vwFindPrev')?.addEventListener('click', () => fStep(-1));
+$('vwFindCase')?.addEventListener('click', e => { fCase = !fCase; e.currentTarget.classList.toggle('on', fCase); fIdx = 0; fRender(true); });
+$('vwFindIn')?.addEventListener('input', () => { fIdx = 0; fRender(true); });
+$('vwFindIn')?.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); fStep(e.shiftKey ? -1 : 1); }
+  else if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); fClose(); $('vwEdit').focus(); }
+});
+$('vwEdit')?.addEventListener('input', () => { if (fOpen()) fRender(false); });
+$('vwEdit')?.addEventListener('scroll', () => { $('vwHl').scrollTop = $('vwEdit').scrollTop; });
+$('viewDialog')?.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'f' && !$('vwEditWrap').hidden) { e.preventDefault(); fShow(); } });
+$('vwCopy')?.addEventListener('click', async () => { try { const d = vwMedia, k = vwKind(vwItem); if (d && !VIEW_KINDS.includes(k)) { if (d.img) await writeClip({ 'image/png': d.blob().type === 'image/png' ? d.blob() : await toPngBlob(d.src) }); else await navigator.clipboard.writeText(d.copy || d.openUrl || ''); } else await defaultCopy(vwItem, k); toast('Copied'); } catch (err) { toast(`Could not copy: ${err.message}`, 'err'); } });
+$('vwOpen')?.addEventListener('click', () => { const d = vwMedia; chrome.tabs.create({ url: d && !(kindOf(vwItem) === 'link') ? (d.openUrl || URL.createObjectURL(d.blob())) : (d && d.openUrl) || vwItem.content.trim() }); });
+$('vwDl')?.addEventListener('click', () => { if (vwMedia && vwMedia.blob) { download(vwMedia.name, vwMedia.blob()); toast('Download started'); } });
+$('viewDialog')?.addEventListener('close', () => { $('vwBody').innerHTML = ''; });
+$('vwLive')?.addEventListener('click', () => openPreview(vwItem));
+
 // list interactions
 $('list')?.addEventListener('input', e => { if (e.target.matches('textarea')) draft = e.target.value; else if (e.target.matches('.tags-edit input')) draftTags = e.target.value; });
 $('list')?.addEventListener('click', async e => {
@@ -1189,6 +1337,7 @@ $('list')?.addEventListener('click', async e => {
     case 'reveal': revealed.add(item.id); render(); break;
     case 'tag': activeTag = activeTag === button.dataset.tag ? '' : button.dataset.tag; render(); break;
     case 'preview': openPreview(item); break;
+    case 'view': if (isDash) openViewer(item); else openDashboard({ view: item.id }); break;
     case 'share': openShare(item); break;
     case 'open': { const u = item.content.trim(); if (/^https?:\/\//i.test(u)) chrome.tabs.create({ url: u }); break; }
     case 'toggle': {
@@ -1273,7 +1422,14 @@ function openDonate() {
   renderDonate(); donateDlg.showModal();
 }
 $('donate')?.addEventListener('click', openDonate);
-$('popSettings')?.addEventListener('click', () => chrome.tabs.create({ url: chrome.runtime.getURL('dashboard.html#settings') }));
-const boot = () => load().then(() => { if (isDash && location.hash === '#settings') openSettings(); });
+$('popSettings')?.addEventListener('click', () => openDashboard({ settings: true }));
+const boot = () => load().then(() => {
+  if (isDash && location.hash === '#settings') openSettings();
+  if (isDash && /^#view=/.test(location.hash)) { const id = decodeURIComponent(location.hash.slice(6)); history.replaceState(null, '', location.pathname); viewById(id); }
+  if (isDash) {
+    chrome.tabs.getCurrent().then(t => t && chrome.storage.session.set({ dashTab: t.id })).catch(() => {});
+    chrome.runtime.onMessage.addListener(m => { if (m && m.type === 'dashSettings') openSettings(); else if (m && m.type === 'dashView') viewById(m.id); });
+  }
+});
 document.readyState === 'loading' ? addEventListener('DOMContentLoaded', boot) : boot();   // after share.js has loaded
 requestAnimationFrame(moveThumb);

@@ -21,7 +21,7 @@ const sizeText = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(
 async function describe(x) {
   const kind = kindOfEntry(x), c = String(x.content || '').trim();
   const blob = async () => (await chrome.storage.local.get(BLOB_PREFIX + x.id))[BLOB_PREFIX + x.id] || '';
-  if (kind === 'link') { const url = safeUrl(c.split(/\s+/)[0]); if (!url) return null; const em = videoEmbed(url); return { type: urlKind(url), src: em ? em.embed : url, thumb: em && em.thumb, provider: em && em.provider, openUrl: em ? em.watch : url, title: domainOf(url) || url, sub: url, copy: url }; }
+  if (kind === 'link') { const url = safeUrl(c.split(/\s+/)[0]); if (!url) return null; const em = videoEmbed(url); return { type: urlKind(url), src: em ? (em.player || em.embed) : url, thumb: em && em.thumb, provider: em && em.provider, openUrl: em ? em.watch : url, title: domainOf(url) || url, sub: url, copy: url }; }
   if (kind === 'image') { const u = await blob(); if (!u) throw new Error('The full-size image is missing.'); return { type: 'image', src: u, blob: () => dataUrlToBlob(u), name: `copyit-image.${(x.image.mime.split('/')[1] || 'png').replace('jpeg', 'jpg')}`, title: 'Image', sub: `${x.image.w}×${x.image.h} · ${sizeText(x.image.size)}`, png: true }; }
   if (kind === 'video') { const u = await blob(); if (!u) throw new Error('The video data is missing.'); const b = dataUrlToBlob(u); return { type: 'video', src: URL.createObjectURL(b), blob: () => b, name: `copyit-video.${(x.image.mime.split('/')[1] || 'mp4').replace('quicktime', 'mov')}`, title: 'Video', sub: `${x.image.w}×${x.image.h} · ${sizeText(x.image.size)}` }; }
   if (kind === 'svg') return { type: 'svg', src: svgDataUri(c), blob: () => new Blob([c], { type: 'image/svg+xml' }), name: 'copyit-vector.svg', title: 'Vector (SVG)', sub: sizeText(new Blob([c]).size), copy: c };
@@ -59,7 +59,8 @@ function wire(d) {
   const body = $('vBody'), id = new URLSearchParams(location.search).get('id');
   try {
     const items = (await chrome.storage.local.get(KEY))[KEY] || [];
-    const x = items.find(i => i.id === id);
+    const qu = new URLSearchParams(location.search).get('url');
+    const x = qu ? { id: 'tmp', content: qu } : items.find(i => i.id === id);
     if (!x) { body.innerHTML = '<p class="v-msg">This clip no longer exists.</p>'; return; }
     const d = await describe(x);
     if (!d) { body.innerHTML = '<p class="v-msg">Nothing to preview for this clip.</p>'; return; }
@@ -73,7 +74,7 @@ function wire(d) {
     }
     body.innerHTML = d.type === 'video' ? `<video src="${esc(d.src)}" controls autoplay loop playsinline></video>`
       : d.type === 'pdf' ? `<iframe src="${esc(d.src)}"></iframe>`
-      : d.type === 'web' ? `<iframe sandbox="allow-same-origin" referrerpolicy="no-referrer" src="${esc(d.src)}"></iframe><div class="lb-note">Some sites block being shown here. Use “Open in new tab”.</div>`
+      : d.type === 'web' ? `<iframe sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer" src="${esc(d.src)}"></iframe><div class="lb-note">Some sites block being shown here. Use “Open in new tab”.</div>`
       : `<img alt="" src="${esc(d.src)}">`;
     const vid = body.querySelector('video');                  // sound autoplay can be blocked in a fresh window: fall back to muted autoplay
     if (vid) vid.play().catch(() => { vid.muted = true; vid.play().catch(() => { }); });

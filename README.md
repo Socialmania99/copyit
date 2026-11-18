@@ -17,6 +17,7 @@ Download, install and every main feature in about 2 minutes. Player not showing?
 
 ## Features
 - Save, search, tag and sort clips into folders. Filters: All, Links, Code, Multimedia.
+- **New in 1.1.0 - Preview and edit:** open any text, link, code or rich text clip in a window, edit it, then discard or save.
 - **New in 1.1.0 - Click to copy:** hover text, click once, copied. Paragraph, sentence or selection. Has an on/off switch.
 - **New in 1.1.0 - Copy text from images and videos:** hover a picture or paused video, press Copy text. Works offline on your device.
 - Preview button opens a small viewer window.

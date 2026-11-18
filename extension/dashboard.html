@@ -24,7 +24,7 @@
     <button id="saveClipboard" class="btn primary"><span class="spin"></span><svg class="i" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="3"/><path d="M9 4V3h6v1M12 9v6M9.5 12.5L12 15l2.5-2.5"/></svg><span>Save clipboard</span></button>
     <button id="manualAdd" data-add class="btn primary"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add text</button>
     
-    <button id="donate" class="ib lg donate" title="Support Copyit"><svg class="i" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.7-8-10.4A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.5c0 5.7-8 10.4-8 10.4z"/></svg></button>
+    <button id="webBtn" class="ib lg" title="Visit socialmania99.com"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.7 3.9 5.7 3.9 9s-1.3 6.3-3.9 9c-2.6-2.7-3.9-5.7-3.9-9S9.4 5.7 12 3z"/></svg></button><button id="donate" class="ib lg donate" title="Support Copyit"><svg class="i" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.7-8-10.4A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.5c0 5.7-8 10.4-8 10.4z"/></svg></button>
   </div>
 </header>
 
@@ -108,6 +108,15 @@
     <textarea id="addText" placeholder="Enter text to save…" rows="6"></textarea>
     <div class="dlg-foot"><span class="kbd">Ctrl + Enter to save</span><span class="spacer"></span><button type="button" class="btn sm" id="addCancel">Cancel</button><button type="submit" class="btn primary sm" id="addSave">Save</button></div>
   </form>
+</dialog>
+<dialog id="viewDialog">
+  <div class="vw-head"><span class="vw-tile" id="vwTile"></span><div class="vw-ttl"><h2 id="vwTitle">Preview</h2><small id="vwSub"></small></div><span class="spacer"></span><button type="button" class="ib" id="vwX" title="Close">&#10005;</button></div>
+  <div class="vw-body" id="vwBody"></div>
+  <div class="vw-find" id="vwFind" hidden><input id="vwFindIn" type="text" placeholder="Find in text" autocomplete="off" spellcheck="false"><span id="vwFindCnt" class="vw-cnt"></span><button type="button" class="btn sm" id="vwFindCase" title="Match case">Aa</button><button type="button" class="btn sm" id="vwFindPrev" title="Previous (Shift+Enter)">&#8593;</button><button type="button" class="btn sm" id="vwFindNext" title="Next (Enter)">&#8595;</button><button type="button" class="ib" id="vwFindX" title="Close find (Esc)">&#10005;</button></div>
+  <div class="vw-editwrap" id="vwEditWrap" hidden><div class="vw-hl" id="vwHl" aria-hidden="true"></div><textarea id="vwEdit" class="vw-edit" spellcheck="false"></textarea></div>
+  <p class="vw-note" id="vwNote" hidden></p>
+  <div class="dlg-foot" id="vwViewFoot"><button type="button" class="btn sm" id="vwLive" hidden>Open page preview</button><button type="button" class="btn sm" id="vwOpen" hidden>Open in new tab</button><button type="button" class="btn sm" id="vwDl" hidden>Download</button><span class="spacer"></span><button type="button" class="btn sm" id="vwEditBtn">Edit</button><button type="button" class="btn primary sm" id="vwCopy">Copy</button></div>
+  <div class="dlg-foot" id="vwEditFoot" hidden><button type="button" class="btn sm" id="vwFindBtn" title="Find words (Ctrl+F)">Find</button><span class="kbd">Ctrl + Enter to save</span><span class="spacer"></span><button type="button" class="btn sm" id="vwDiscard">Discard</button><button type="button" class="btn primary sm" id="vwSave">Save changes</button></div>
 </dialog>
 <div id="toasts" aria-live="polite"></div>
 <input id="anyFile" type="file" multiple accept=".json,.csv,.txt,.md,.markdown,.html,.htm,.svg,text/*,image/*,video/*,application/json" hidden>

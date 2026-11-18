@@ -290,12 +290,46 @@
   }
   try { chrome.storage.onChanged.addListener((ch, area) => { if (area === 'local' && ch[SETTINGS_KEY]) apply(ch[SETTINGS_KEY].newValue || {}); }); } catch { }
 
+  /* ---------- right-click: copy an image (or a video frame) straight to the clipboard ---------- */
+  function pickMedia(src) {
+    const all = [...document.querySelectorAll('img,video')].filter(el => { const r = el.getBoundingClientRect(); return r.width > 8 && r.height > 8 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth; });
+    return all.find(el => src && (el.currentSrc || el.src) === src) || all.find(el => src && (el.currentSrc || el.src || '').split('#')[0] === src.split('#')[0]) || (lastCtx && lastCtx.el && lastCtx.el.isConnected ? lastCtx.el : null);
+  }
+  const canvasPng = (src, w, h) => { const cv = document.createElement('canvas'); cv.width = w; cv.height = h; cv.getContext('2d').drawImage(src, 0, 0, w, h); return new Promise((res, rej) => { try { cv.toBlob(b => b ? res(b) : rej(new Error('blocked')), 'image/png'); } catch (e) { rej(e); } }); };
+  async function asPng(blob) {
+    if (blob.type === 'image/png') return blob;
+    const url = URL.createObjectURL(blob);
+    try { const im = new Image(); im.src = url; await im.decode(); return await canvasPng(im, im.naturalWidth || 512, im.naturalHeight || 512); } finally { URL.revokeObjectURL(url); }
+  }
+  async function mediaCopy(m) {
+    toast('Copying…', { busy: true });
+    try {
+      const el = pickMedia(m.srcUrl || ''); let blob = null;
+      if (m.mode === 'frame') {
+        if (!el || el.tagName !== 'VIDEO' || !el.videoWidth) throw new Error('video');
+        try { blob = await canvasPng(el, el.videoWidth, el.videoHeight); } catch { throw new Error('blocked'); }
+      } else {
+        if (el && el.tagName === 'IMG' && el.complete && el.naturalWidth) { try { blob = await canvasPng(el, el.naturalWidth, el.naturalHeight); } catch { } }
+        if (!blob && m.srcUrl) { try { const r = await fetch(m.srcUrl); if (r.ok) blob = await r.blob(); } catch { } }
+        if (!blob && m.srcUrl) { try { const r = await chrome.runtime.sendMessage({ type: 'FETCH_MEDIA', url: m.srcUrl }); if (r && r.ok) blob = await (await fetch(r.dataUrl)).blob(); } catch { } }
+        if (!blob) throw new Error('blocked');
+        blob = await asPng(blob);
+      }
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+      toast(m.mode === 'frame' ? 'Video frame copied' : 'Image copied');
+    } catch (e) {
+      toast(e && e.message === 'video' ? 'Could not find that video' : 'Could not copy this ' + (m.mode === 'frame' ? 'frame' : 'image'), { warn: true, note: e && e.message === 'video' ? '' : 'The website does not allow it.' });
+    }
+  }
+
   /* messages from the extension: read-this-frame results and "find the media element" for the right-click item */
   try {
     chrome.runtime.onMessage.addListener((m, _s, send) => {
       if (!m || m.target !== 'page') return;
       if (m.type === 'OCR_STATUS') { toast(m.text, { busy: true }); return; }
       if (m.type === 'OCR_RESULT') { busy = false; finish(m.result); return; }
+      if (m.type === 'MEDIA_COPY') { mediaCopy(m); return; }
+      if (m.type === 'MEDIA_MSG') { toast(m.text, { warn: true, note: m.note }); return; }
       if (m.type === 'OCR_FIND') {                                   // right-click on an image or video: find it and report its box
         const all = [...document.querySelectorAll('img,video')].filter(el => { const r = el.getBoundingClientRect(); return r.width > 8 && r.height > 8 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth; });
         const src = m.srcUrl || '';

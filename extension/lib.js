@@ -11,6 +11,7 @@ var CopyitLib = (() => {
 
   // ---- Video sites that must be shown through their embed player (YouTube pages refuse to be framed) ----
   const ytTime = v => { if (!v) return 0; if (/^\d+$/.test(v)) return +v; const m = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/.exec(v); return m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : 0; };
+  const PLAYER_URL = 'https://socialmania99.com/Copyit/player.html';   // hosted page that embeds YouTube (YouTube refuses extension pages)
   const videoEmbed = u => {
     let x; try { x = new URL(String(u).trim()); } catch { return null; }
     if (!/^https?:$/.test(x.protocol)) return null;
@@ -24,7 +25,8 @@ var CopyitLib = (() => {
     if (/^[\w-]{11}$/.test(id)) {
       const t = ytTime(x.searchParams.get('t') || x.searchParams.get('start'));
       return { provider: 'youtube', label: 'YouTube video', id, thumb: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`, watch: `https://www.youtube.com/watch?v=${id}${t ? '&t=' + t + 's' : ''}`,
-        embed: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1${t ? '&start=' + t : ''}` };
+        embed: `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1${t ? '&start=' + t : ''}`,
+        player: `${PLAYER_URL}?v=${id}${t ? '&start=' + t : ''}` };
     }
     if (h === 'vimeo.com' || h === 'player.vimeo.com') {
       const m = /\/(\d{5,12})(?:\/|$)/.exec(x.pathname);
