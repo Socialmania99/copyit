@@ -11,7 +11,7 @@ var CopyitLib = (() => {
 
   // ---- Video sites that must be shown through their embed player (YouTube pages refuse to be framed) ----
   const ytTime = v => { if (!v) return 0; if (/^\d+$/.test(v)) return +v; const m = /^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/.exec(v); return m ? (+m[1] || 0) * 3600 + (+m[2] || 0) * 60 + (+m[3] || 0) : 0; };
-  const PLAYER_URL = 'https://socialmania99.com/Copyit/player.html';   // hosted page that embeds YouTube (YouTube refuses extension pages)
+  const PLAYER_URL = 'https://socialmania99.com/copyit/player.html';   // hosted page that embeds YouTube (YouTube refuses extension pages)
   const videoEmbed = u => {
     let x; try { x = new URL(String(u).trim()); } catch { return null; }
     if (!/^https?:$/.test(x.protocol)) return null;
