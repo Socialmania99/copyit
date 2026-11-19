@@ -2,7 +2,7 @@
    Loaded by the popup and dashboard with <script> and by the background worker with importScripts. No DOM needed. */
 var CopyitLib = (() => {
   const KEY = 'savedTexts', BLOB_PREFIX = 'copyitBlob:', SETTINGS = 'copyitSettings';
-  const DEFAULT_SETTINGS = { blur: true, keepDays: 0, maxEntries: 1000, excludeSensitiveFromExport: false, linkPreview: true, clickCopy: false, clickUnit: 'paragraph', clickSave: true, imgText: false };
+  const DEFAULT_SETTINGS = { blur: true, keepDays: 0, maxEntries: 1000, excludeSensitiveFromExport: false, linkPreview: true, clickCopy: false, clickUnit: 'paragraph', clickSave: true, imgText: false, pip: false };
   const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
   const MAX_VIDEO_BYTES = 25 * 1024 * 1024;
   const FOLDERS = 'copyitFolders';

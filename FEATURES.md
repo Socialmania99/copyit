@@ -7,6 +7,8 @@
 
 ## Page tools (new in 1.1.0, both off by default)
 Turn them on in the popup ("Page tools") or in Settings. Chrome asks once to allow Copyit on websites; it only acts on a page after you hover or click.
+- **Picture in picture.** Turn on Picture in picture under Page tools. A pop-out button shows on any playing video or audio, and the pop-out window has Minimize and Maximize. Also in the right-click menu on any video or audio.
+- **Movable preview.** Hold the right mouse button on the preview window to move it. Minimize and Maximize sit next to the rotate button.
 - **Resizable preview.** Drag the bottom-right corner to make the preview window as big as your screen. The switch button next to the close button changes between a vertical mobile view and a wide desktop view.
 - **Preview and edit.** Press Preview on any clip to open it in a window: text, code, links, pictures, videos and more. Pictures and videos also open from a click on the picture. Press Edit to change the text, **Discard** to drop the changes or **Save changes** to keep them. From the toolbar popup, Preview opens the dashboard first and shows the window there.
 - **Right-click media.** On a website, right-click an image for **Copy image directly** and **Preview in Copyit**, or a video for **Copy video frame as image** and **Preview in Copyit**. Inside Copyit, right-click a saved picture or video for Preview and Copy image.

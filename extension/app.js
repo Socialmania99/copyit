@@ -1210,10 +1210,58 @@ function vwSize() {
   dlg.classList.toggle('mobile', vwView === 'mobile');
   const b = $('vwMode'); b.title = vwView === 'mobile' ? 'Switch to desktop view (landscape)' : 'Switch to mobile view (vertical)';
 }
-$('vwMode')?.addEventListener('click', () => { vwView = vwView === 'mobile' ? 'desktop' : 'mobile'; try { localStorage.setItem('copyitViewMode', vwView); } catch { } vwSize(); });
+$('vwMode')?.addEventListener('click', () => { if (vwState !== 'normal') { vwState = 'normal'; vwToModal(); vwPaintBtns(); } vwView = vwView === 'mobile' ? 'desktop' : 'mobile'; try { localStorage.setItem('copyitViewMode', vwView); } catch { } vwSize(); });
 try {                                                                       // keep the window on screen while it is dragged bigger
-  new ResizeObserver(() => { const d = $('viewDialog'); if (!d.open) return; const r = d.getBoundingClientRect(); if (r.right > innerWidth - 8) d.style.left = Math.max(8, innerWidth - 8 - r.width) + 'px'; if (r.bottom > innerHeight - 8) d.style.top = Math.max(8, innerHeight - 8 - r.height) + 'px'; }).observe($('viewDialog'));
+  new ResizeObserver(() => { const d = $('viewDialog'); if (!d.open || vwState !== 'normal') return; const r = d.getBoundingClientRect(); if (r.right > innerWidth - 8) d.style.left = Math.max(8, innerWidth - 8 - r.width) + 'px'; if (r.bottom > innerHeight - 8) d.style.top = Math.max(8, innerHeight - 8 - r.height) + 'px'; }).observe($('viewDialog'));
 } catch { }
+/* minimize / maximize / move */
+let vwState = 'normal', vwPrev = null, vwSkipClose = false;
+const vwDlg = () => $('viewDialog');
+function vwBox() { const r = vwDlg().getBoundingClientRect(); return { l: r.left, t: r.top, w: r.width, h: r.height }; }
+function vwPlace(b) { const d = vwDlg(); d.classList.add('sized'); d.style.inset = 'auto'; d.style.left = Math.round(b.l) + 'px'; d.style.top = Math.round(b.t) + 'px'; d.style.width = Math.round(b.w) + 'px'; d.style.height = Math.round(b.h) + 'px'; }
+function vwPaintBtns() {
+  const mn = $('vwMin'), mx = $('vwMax');
+  mn.title = vwState === 'min' ? 'Restore' : 'Minimize'; mx.title = vwState === 'max' ? 'Restore size' : 'Maximize';
+  mn.innerHTML = vwState === 'min' ? '<svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>' : '<svg class="i" viewBox="0 0 24 24"><path d="M6 18h12"/></svg>';
+  mx.innerHTML = vwState === 'max' ? '<svg class="i" viewBox="0 0 24 24"><rect x="8.5" y="4.5" width="11" height="11" rx="1.5"/><path d="M15.5 8.5h-9v11h11v-4"/></svg>' : '<svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>';
+  vwDlg().classList.toggle('min', vwState === 'min'); vwDlg().classList.toggle('max', vwState === 'max');
+}
+function vwToModal() { const d = vwDlg(); if (d.open && !d.matches(':modal')) { vwSkipClose = true; d.close(); d.showModal(); } }   // back to a modal window (the page behind is locked again)
+function vwSetState(s) {
+  const d = vwDlg(), was = vwState; if (s === was || !d.open) return;
+  if (was === 'normal') vwPrev = vwBox();
+  vwState = s;
+  if (s === 'min') {
+    vwSkipClose = true; d.close(); d.show();                                // not modal: the page behind stays usable, media keeps playing
+    d.style.inset = 'auto'; d.style.width = '340px'; d.style.height = 'auto'; d.style.left = Math.max(8, innerWidth - 356) + 'px'; d.style.top = Math.max(8, innerHeight - d.offsetHeight - 16) + 'px';
+  } else if (s === 'max') {
+    vwToModal(); vwPlace({ l: 8, t: 8, w: innerWidth - 16, h: innerHeight - 16 });
+  } else { vwToModal(); vwPlace(vwPrev || { l: 100, t: 60, w: 760, h: 520 }); }
+  vwPaintBtns();
+}
+function vwClose() { const d = vwDlg(); vwState = 'normal'; vwPaintBtns(); if (d.open) d.close(); }
+$('vwMin')?.addEventListener('click', () => vwSetState(vwState === 'min' ? 'normal' : 'min'));
+$('vwMax')?.addEventListener('click', () => vwSetState(vwState === 'max' ? 'normal' : 'max'));
+$('vwHead')?.addEventListener('dblclick', e => { if (!e.target.closest('button')) vwSetState(vwState === 'max' ? 'normal' : 'max'); });
+(function dragWindow() {                                                    // hold the right mouse button (or drag the title with the left one) to move the window
+  const d = vwDlg(); if (!d) return; let g = null;
+  d.addEventListener('mousedown', e => {
+    const right = e.button === 2, left = e.button === 0 && e.target.closest('.vw-head') && !e.target.closest('button');
+    if (!right && !left) return;
+    if (right && e.target.closest('textarea,input')) return;
+    if (vwState === 'max') return;
+    const r = d.getBoundingClientRect(); g = { x: e.clientX, y: e.clientY, l: r.left, t: r.top, w: r.width, moved: false };
+    if (right) e.preventDefault();
+  });
+  addEventListener('mousemove', e => {
+    if (!g) return; const dx = e.clientX - g.x, dy = e.clientY - g.y;
+    if (!g.moved) { if (Math.hypot(dx, dy) < 4) return; g.moved = true; d.classList.add('dragging'); d.classList.add('sized'); d.style.inset = 'auto'; d.style.left = g.l + 'px'; d.style.top = g.t + 'px'; if (vwState === 'min') d.style.width = '340px'; }
+    d.style.left = Math.min(innerWidth - 80, Math.max(80 - g.w, g.l + dx)) + 'px';
+    d.style.top = Math.min(innerHeight - 48, Math.max(0, g.t + dy)) + 'px';
+  });
+  addEventListener('mouseup', () => { if (g) { g = null; d.classList.remove('dragging'); } });
+  d.addEventListener('contextmenu', e => { if (!e.target.closest('textarea,input')) e.preventDefault(); });
+})();
 const FRAME_RULE = 9001;
 async function allowFraming() {              // pages may be shown in Copyit's own preview frames only
   try {
@@ -1284,7 +1332,7 @@ async function openViewer(x) {
   if (!text || k === 'link') { try { vwMedia = await describeMedia(x); } catch (err) { toast(err.message, 'err'); if (!text) return; } }
   if (!text && !vwMedia) return;
   vwItem = x; vwRender(x); vwMode(false);
-  const dlg = $('viewDialog'); if (!dlg.open) { dlg.showModal(); vwSize(); }
+  const dlg = $('viewDialog'); if (!dlg.open) { vwState = 'normal'; vwPaintBtns(); dlg.showModal(); vwSize(); } else if (vwState !== 'normal') { vwSetState('normal'); }
 }
 function vwDiscard() { vwMode(false); $('vwEdit').value = ''; }
 async function vwSave() {
@@ -1301,7 +1349,7 @@ async function vwSave() {
   vwMedia = null; if (vwKind(x) === 'link') { try { vwMedia = await describeMedia(x); } catch { } }
   vwRender(x); vwMode(false);
 }
-$('vwX')?.addEventListener('click', () => $('viewDialog').close());
+$('vwX')?.addEventListener('click', vwClose);
 $('viewDialog')?.addEventListener('click', e => { const d = $('viewDialog'); if (e.target !== d) return; const r = d.getBoundingClientRect(); if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) d.close(); });   // outside click only, not the resize handle
 $('viewDialog')?.addEventListener('cancel', e => { if (!$('vwEditWrap').hidden) { e.preventDefault(); vwDiscard(); } });   // Esc while editing = discard
 $('vwEditBtn')?.addEventListener('click', () => { $('vwEdit').value = vwItem.content; vwMode(true); const t = $('vwEdit'); t.focus(); t.setSelectionRange(t.value.length, t.value.length); });
@@ -1349,7 +1397,7 @@ $('viewDialog')?.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey)
 $('vwCopy')?.addEventListener('click', async () => { try { const d = vwMedia, k = vwKind(vwItem); if (d && !VIEW_KINDS.includes(k)) { if (d.img) await writeClip({ 'image/png': d.blob().type === 'image/png' ? d.blob() : await toPngBlob(d.src) }); else await navigator.clipboard.writeText(d.copy || d.openUrl || ''); } else await defaultCopy(vwItem, k); toast('Copied'); } catch (err) { toast(`Could not copy: ${err.message}`, 'err'); } });
 $('vwOpen')?.addEventListener('click', () => { const d = vwMedia; chrome.tabs.create({ url: d && !(kindOf(vwItem) === 'link') ? (d.openUrl || URL.createObjectURL(d.blob())) : (d && d.openUrl) || vwItem.content.trim() }); });
 $('vwDl')?.addEventListener('click', () => { if (vwMedia && vwMedia.blob) { download(vwMedia.name, vwMedia.blob()); toast('Download started'); } });
-$('viewDialog')?.addEventListener('close', () => { $('vwBody').innerHTML = ''; });
+$('viewDialog')?.addEventListener('close', () => { if (vwSkipClose) { vwSkipClose = false; return; } $('vwBody').innerHTML = ''; });
 $('vwLive')?.addEventListener('click', () => openPreview(vwItem));
 
 // list interactions

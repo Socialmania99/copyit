@@ -21,6 +21,8 @@
       </div>
       <div class="pt-sep"></div>
       <div class="pt-row"><span><b>Copy text from images &amp; videos</b><small>Hover a picture or paused video, press Copy text.</small></span><input type="checkbox" class="switch" id="tgImg" aria-label="Copy text from images and videos"></div>
+      <div class="pt-sep"></div>
+      <div class="pt-row"><span><b>Picture in picture</b><small>A pop-out button shows on any playing video or audio.</small></span><input type="checkbox" class="switch" id="tgPip" aria-label="Picture in picture for videos and audio"></div>
       <p class="tool-note" id="toolNote" hidden></p>`;
   }
   function build(popup) {
@@ -39,15 +41,15 @@
     const q = s => el.querySelector(s), note = q('#toolNote');
     const say = t => { note.textContent = t || ''; note.hidden = !t; };
     const paint = s => {
-      q('#tgClick').checked = !!s.clickCopy; q('#tgImg').checked = !!s.imgText;
+      q('#tgClick').checked = !!s.clickCopy; q('#tgImg').checked = !!s.imgText; q('#tgPip').checked = !!s.pip;
       q('#tgSave').checked = s.clickSave !== false;
       q('#clickOpts').classList.toggle('off', !s.clickCopy);
       el.querySelectorAll('[data-unit]').forEach(b => b.setAttribute('aria-checked', String(b.dataset.unit === s.clickUnit)));
-      const n = (s.clickCopy ? 1 : 0) + (s.imgText ? 1 : 0), c = q('#toolsCount'); if (c) { c.textContent = n ? `${n} on` : 'off'; c.classList.toggle('on', !!n); }
+      const n = (s.clickCopy ? 1 : 0) + (s.imgText ? 1 : 0) + (s.pip ? 1 : 0), c = q('#toolsCount'); if (c) { c.textContent = n ? `${n} on` : 'off'; c.classList.toggle('on', !!n); }
     };
     // if the website permission was taken away in Chrome, show the switches as off instead of lying
     let s = await load();
-    if ((s.clickCopy || s.imgText) && !(await chrome.permissions.contains(ALL))) { await patch({ clickCopy: false, imgText: false }); s = await load(); }
+    if ((s.clickCopy || s.imgText || s.pip) && !(await chrome.permissions.contains(ALL))) { await patch({ clickCopy: false, imgText: false, pip: false }); s = await load(); }
     paint(s);
 
     async function flip(key, input) {
@@ -64,12 +66,13 @@
         await patch({ [key]: false });
         const s2 = await load();
         let keep = false; try { keep = !!(await chrome.storage.local.get('copyitPreviewWeb')).copyitPreviewWeb; } catch { }
-        if (!s2.clickCopy && !s2.imgText && !keep) { try { await chrome.permissions.remove(ALL); } catch { } }
+        if (!s2.clickCopy && !s2.imgText && !s2.pip && !keep) { try { await chrome.permissions.remove(ALL); } catch { } }
       }
       paint(await load()); sync();
     }
     q('#tgClick').addEventListener('change', e => flip('clickCopy', e.target));
     q('#tgImg').addEventListener('change', e => flip('imgText', e.target));
+    q('#tgPip').addEventListener('change', e => flip('pip', e.target));
     q('#tgSave').addEventListener('change', async e => { await patch({ clickSave: e.target.checked }); });
     el.querySelectorAll('[data-unit]').forEach(b => b.addEventListener('click', async () => { await patch({ clickUnit: b.dataset.unit }); paint(await load()); }));
     const btn = q('#ptBtn'), pop = q('#ptPop');

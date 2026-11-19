@@ -6,7 +6,7 @@
   if (window.__copyitCS) { window.__copyitCS.boot(); return; }
 
   const SETTINGS_KEY = 'copyitSettings';
-  const S = { clickCopy: false, clickUnit: 'paragraph', clickSave: true, imgText: false };
+  const S = { clickCopy: false, clickUnit: 'paragraph', clickSave: true, imgText: false, pip: false };
   const BLOCK_SKIP = 'input,textarea,select,option,button,a,summary,label,[contenteditable],[contenteditable="true"],[role="button"],[role="link"],[role="textbox"],[role="menuitem"],[role="tab"],[role="checkbox"],[role="switch"],script,style,noscript,svg,canvas,video,audio,img,iframe,code[data-copyit-skip]';
   const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const VIDEO_HOST = /youtube|youtu\.be|vimeo|dailymotion|twitch|player|video|embed/i;
@@ -39,10 +39,14 @@
     .chip.on{display:inline-flex}
     .chip:hover{filter:brightness(1.08)}
     .chip svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+    .pipchip{position:fixed;display:none;align-items:center;gap:6px;height:30px;padding:0 12px 0 9px;border:0;border-radius:99px;background:#12131a;color:#fff;font:600 12.5px system-ui;box-shadow:0 4px 14px rgba(0,0,0,.45);cursor:pointer;pointer-events:auto;border:1px solid rgba(255,255,255,.18)}
+    .pipchip.on{display:inline-flex}.pipchip:hover{background:#3b6ef5}
+    .pipchip svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
     .mout{position:fixed;display:none;pointer-events:none;border:2px dashed #3b6ef5;border-radius:6px}
   </style>
   <div class="hl" id="hl"></div><div id="lines"></div><div class="ring" id="ring"></div><div class="mout" id="mout"></div>
   <button class="chip" id="chip" type="button" aria-label="Copy text from this image or video"><svg viewBox="0 0 24 24"><path d="M5 7V5h14v2M12 5v14M9 19h6"/></svg><span>Copy text</span></button>
+  <button class="pipchip" id="pipchip" type="button" aria-label="Picture in picture"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><rect x="12" y="11.5" width="7" height="5" rx="1" fill="#fff" stroke="none"/></svg><span>Picture in picture</span></button>
   <div class="toast" id="toast" role="status" aria-live="polite"><span class="dot" id="tdot"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7"/></svg></span><span class="msg" id="tmsg"></span></div>`;
   const $ = id => root.getElementById(id);
   const hl = $('hl'), lines = $('lines'), ring = $('ring'), toastEl = $('toast'), tmsg = $('tmsg'), tdot = $('tdot'), chip = $('chip'), mout = $('mout');
@@ -284,6 +288,7 @@
     wire(!!(S.clickCopy || S.imgText));
     if (!S.clickCopy) clearHl();
     if (!S.imgText) hideChip();
+    if (!!S.pip !== pipWired) { pipWired = !!S.pip; pipWire(pipWired); }
   }
   function boot() {
     try { chrome.storage.local.get(SETTINGS_KEY, d => { void chrome.runtime.lastError; apply((d && d[SETTINGS_KEY]) || {}); }); } catch { }
@@ -329,6 +334,7 @@
       if (m.type === 'OCR_STATUS') { toast(m.text, { busy: true }); return; }
       if (m.type === 'OCR_RESULT') { busy = false; finish(m.result); return; }
       if (m.type === 'MEDIA_COPY') { mediaCopy(m); return; }
+      if (m.type === 'PIP_OPEN') { openPip(pickPip(m.srcUrl || '')); return; }
       if (m.type === 'MEDIA_MSG') { toast(m.text, { warn: true, note: m.note }); return; }
       if (m.type === 'OCR_FIND') {                                   // right-click on an image or video: find it and report its box
         const all = [...document.querySelectorAll('img,video')].filter(el => { const r = el.getBoundingClientRect(); return r.width > 8 && r.height > 8 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth; });
@@ -348,6 +354,138 @@
   let lastCtx = null;
   const dist = (el, cx, cy) => { const r = el.getBoundingClientRect(); return Math.hypot(r.left + r.width / 2 - cx, r.top + r.height / 2 - cy); };
   window.addEventListener('contextmenu', e => { const m = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.tagName === 'IMG' || el.tagName === 'VIDEO'); lastCtx = m ? { el: m } : null; }, true);
+
+  /* ---------- Picture in picture: any playing video or audio ---------- */
+  const pipChip = $('pipchip'), playing = new Set();
+  let pipWin = null, pipWired = false, pipTimer = 0;
+  const isPlayEl = el => !!el && (el.tagName === 'VIDEO' || el.tagName === 'AUDIO');
+  const seenVideo = el => { if (el.tagName !== 'VIDEO') return false; const r = el.getBoundingClientRect(); return r.width > 120 && r.height > 70 && r.bottom > 0 && r.right > 0 && r.top < innerHeight && r.left < innerWidth; };
+  function pipTarget() {
+    let best = null;
+    for (const el of playing) { if (!el.isConnected || el.paused || el.ended) continue; if (!best || seenVideo(el) || !seenVideo(best)) best = el; }
+    return best;
+  }
+  function pickPip(src) {
+    const all = [...document.querySelectorAll('video,audio')];
+    return all.find(el => src && (el.currentSrc || el.src) === src) || pipTarget() || all.filter(seenVideo)[0] || all[0] || null;
+  }
+  function placePipChip() {
+    if (!S.pip || pipWin) { pipChip.classList.remove('on'); return; }
+    const el = pipTarget(); if (!el) { pipChip.classList.remove('on'); return; }
+    mount();
+    const vid = seenVideo(el), r = el.getBoundingClientRect();
+    pipChip.querySelector('span').textContent = vid ? 'Picture in picture' : 'Mini player';
+    pipChip.style.left = vid ? Math.max(8, Math.min(innerWidth - 170, r.right - 170)) + 'px' : Math.max(8, innerWidth - 150) + 'px';
+    pipChip.style.top = vid ? Math.max(8, r.top + 8) + 'px' : Math.max(8, innerHeight - 46) + 'px';
+    pipChip.classList.add('on');
+  }
+  const onPlay = e => { if (isPlayEl(e.target)) { playing.add(e.target); placePipChip(); } };
+  const onStop = e => { if (isPlayEl(e.target)) { playing.delete(e.target); placePipChip(); } };
+  function pipWire(on) {
+    const f = on ? 'addEventListener' : 'removeEventListener';
+    for (const t of ['play', 'playing']) document[f](t, onPlay, true);
+    for (const t of ['pause', 'ended', 'emptied']) document[f](t, onStop, true);
+    window[f]('resize', placePipChip);
+    clearInterval(pipTimer);
+    if (on) {
+      pipTimer = setInterval(placePipChip, 600);
+      document.querySelectorAll('video,audio').forEach(el => { if (!el.paused && !el.ended) playing.add(el); });
+      placePipChip();
+    } else { playing.clear(); pipChip.classList.remove('on'); }
+  }
+  pipChip.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); openPip(pipTarget()); });
+
+  async function openPip(el) {
+    if (!el) { toast('No video or audio found on this page', { warn: true }); return; }
+    if (pipWin) { try { pipWin.close(); } catch { } return; }
+    const video = el.tagName === 'VIDEO' && el.videoWidth > 0;
+    const again = () => toast('Ready to pop out', { action: { label: video ? 'Picture in picture' : 'Mini player', fn: () => openPip(el) } });
+    if (window.documentPictureInPicture && window.documentPictureInPicture.requestWindow) {
+      try { await docPip(el, video); return; } catch (e) { if (e && e.name === 'NotAllowedError') { again(); return; } }
+    }
+    if (video && document.pictureInPictureEnabled && !el.disablePictureInPicture) {
+      try { await el.requestPictureInPicture(); return; } catch (e) { if (e && e.name === 'NotAllowedError') { again(); return; } }
+    }
+    toast('Picture in picture is not available here', { warn: true, note: video ? '' : 'Audio pop-out needs Chrome 116 or newer.' });
+  }
+
+  async function docPip(el, video) {
+    const asp = video ? el.videoWidth / el.videoHeight : 0;
+    const NORM = video ? [480, Math.min(700, Math.round(480 / asp) + 52)] : [360, 170];
+    const win = await window.documentPictureInPicture.requestWindow({ width: NORM[0], height: NORM[1] });
+    pipWin = win; pipChip.classList.remove('on');
+    const d = win.document, NS = 'http://www.w3.org/2000/svg';
+    const sheet = new win.CSSStyleSheet();                        // constructed styles are not blocked by the site's content security policy
+    sheet.replaceSync(`html,body{margin:0;height:100%;background:#0b0c10;color:#fff;font:13px system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+      .wrap{display:flex;flex-direction:column;height:100%}
+      .stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#000;overflow:hidden}
+      .stage.audio{background:linear-gradient(135deg,#1d2f6b,#0b0c10)}
+      .stage video{width:100%;height:100%;max-width:none;max-height:none;object-fit:contain;margin:0;position:static;transform:none}
+      .card{text-align:center;padding:12px 18px;min-width:0}.card svg{width:44px;height:44px;stroke:#9db4ff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+      .card .t{margin-top:8px;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+      .mtitle{display:none;padding:10px 14px 0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .bar{flex:none;display:flex;align-items:center;gap:4px;padding:8px 10px;background:#12131a}
+      .b{flex:none;width:30px;height:30px;border:0;border-radius:8px;background:transparent;display:grid;place-items:center;cursor:pointer;padding:0}
+      .b:hover{background:rgba(255,255,255,.15)}
+      .b svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+      .seek{flex:1;min-width:40px;accent-color:#3b6ef5;margin:0 4px}
+      .time{flex:none;font-variant-numeric:tabular-nums;font-size:11.5px;color:#aab1c8;margin:0 4px}
+      .sep{flex:none;width:1px;height:18px;margin:0 3px;background:rgba(255,255,255,.2)}
+      .min .stage{display:none}.min .mtitle{display:block}.min .wrap{justify-content:center}`);
+    d.adoptedStyleSheets = [sheet];
+    const mk = (tag, cls, txt) => { const n = d.createElement(tag); if (cls) n.className = cls; if (txt != null) n.textContent = txt; return n; };
+    const ico = paths => { const s = d.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '0 0 24 24'); for (const p of paths) { const e = d.createElementNS(NS, 'path'); e.setAttribute('d', p); s.appendChild(e); } return s; };
+    const btn = (title, paths, fn) => { const b = mk('button', 'b'); b.type = 'button'; b.title = title; b.setAttribute('aria-label', title); b.appendChild(ico(paths)); b.addEventListener('click', fn); return b; };
+    const I = { play: ['M8 5.5v13l10-6.5z'], pause: ['M9 6v12M15 6v12'], vol: ['M4 10v4h4l5 4V6L8 10z', 'M16.5 9a4 4 0 0 1 0 6'], mute: ['M4 10v4h4l5 4V6L8 10z', 'M16 9.5l5 5M21 9.5l-5 5'], min: ['M6 18h12'], max: ['M6 6h12v12H6z'], restore: ['M9 5h10v10', 'M5 9h10v10H5z'], back: ['M14 5h5v5', 'M19 5l-8 8', 'M10 6H6.5A1.5 1.5 0 0 0 5 7.5v10A1.5 1.5 0 0 0 6.5 19h10a1.5 1.5 0 0 0 1.5-1.5V14'] };
+    const title = () => (navigator.mediaSession && navigator.mediaSession.metadata && navigator.mediaSession.metadata.title) || document.title || location.hostname;
+
+    const wrap = mk('div', 'wrap'), stage = mk('div', 'stage' + (video ? '' : ' audio')), mtitle = mk('div', 'mtitle', title()), bar = mk('div', 'bar');
+    let marker = null, savedStyle = null;
+    if (video) {
+      marker = document.createComment('copyit-pip'); el.before(marker); savedStyle = el.getAttribute('style');
+      const was = !el.paused; stage.appendChild(el); if (was && el.paused) el.play().catch(() => { });
+    } else {
+      const card = mk('div', 'card'); card.appendChild(ico(['M9 18V6l10-2v12', 'M9 18a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z', 'M19 16a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z'])); card.appendChild(mk('div', 't', title())); stage.appendChild(card);
+    }
+    const play = btn('Play / pause', I.play, () => { if (el.paused) el.play().catch(() => { }); else el.pause(); });
+    const seek = mk('input', 'seek'); seek.type = 'range'; seek.min = 0; seek.step = 'any'; seek.value = 0; seek.addEventListener('input', () => { try { el.currentTime = Number(seek.value); } catch { } });
+    const time = mk('span', 'time', '0:00');
+    const mute = btn('Mute', I.vol, () => { el.muted = !el.muted; });
+    let state = 'normal';
+    const sizeFor = s => {
+      const aw = screen.availWidth || 1280, ah = screen.availHeight || 800;
+      if (s === 'min') return [330, 124];
+      if (s === 'max') { const w = Math.min(video ? 1280 : 720, aw - 120); return [w, Math.min(ah - 100, video ? Math.round(w / asp) + 52 : 190)]; }
+      return NORM;
+    };
+    const minB = btn('Minimize', I.min, () => setState(state === 'min' ? 'normal' : 'min'));
+    const maxB = btn('Maximize', I.max, () => setState(state === 'max' ? 'normal' : 'max'));
+    const backB = btn('Back to tab', I.back, () => { try { win.close(); } catch { } window.focus(); });
+    function setState(s) {
+      state = s; wrap.classList.toggle('min', s === 'min'); d.body.classList.toggle('min', s === 'min');
+      minB.replaceChildren(ico(s === 'min' ? I.restore : I.min)); minB.title = s === 'min' ? 'Restore' : 'Minimize';
+      maxB.replaceChildren(ico(s === 'max' ? I.restore : I.max)); maxB.title = s === 'max' ? 'Restore size' : 'Maximize';
+      const [w, h] = sizeFor(s); try { win.resizeTo(w, h); } catch { }
+    }
+    const fmt = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
+    const upd = () => {
+      play.replaceChildren(ico(el.paused ? I.play : I.pause)); play.title = el.paused ? 'Play' : 'Pause';
+      mute.replaceChildren(ico(el.muted || el.volume === 0 ? I.mute : I.vol));
+      const fin = isFinite(el.duration) && el.duration > 0; seek.style.visibility = fin ? 'visible' : 'hidden';
+      if (fin) { seek.max = el.duration; seek.value = el.currentTime; }
+      time.textContent = fin ? `${fmt(el.currentTime)} / ${fmt(el.duration)}` : (el.paused ? 'Paused' : 'Live');
+    };
+    const evs = ['play', 'pause', 'timeupdate', 'volumechange', 'durationchange', 'loadedmetadata', 'ended'];
+    evs.forEach(n => el.addEventListener(n, upd)); upd();
+    bar.append(play, seek, time, mute, mk('span', 'sep'), minB, maxB, backB);
+    wrap.append(mtitle, stage, bar); d.body.appendChild(wrap);
+    d.addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); play.click(); } });
+    win.addEventListener('pagehide', () => {
+      evs.forEach(n => el.removeEventListener(n, upd));
+      if (video) { const was = !el.paused; if (marker.parentNode) marker.replaceWith(el); if (savedStyle == null) el.removeAttribute('style'); else el.setAttribute('style', savedStyle); if (was && el.paused) el.play().catch(() => { }); }
+      pipWin = null; placePipChip();
+    }, { once: true });
+  }
 
   window.__copyitCS = { boot };
   mount(); boot();
