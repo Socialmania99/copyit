@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Copyit Settings</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="settings.css">
+</head>
+<body class="settingspage">
+<div class="sp-shell">
+  <aside class="sp-side" id="spSide">
+    <div class="sp-brand"><img src="icons/icon128.png" alt="" width="40" height="40"><b>Copyit</b></div>
+    <button type="button" class="sp-back" id="backDash"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back to Dashboard</button>
+    <nav class="sp-nav" aria-label="Settings categories">
+      <span class="sp-label">Settings</span>
+      <a href="#general" data-cat="general"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M18.4 5.6l-1.8 1.8M7.4 16.6l-1.8 1.8"/></svg>General</a>
+      <a href="#tools" data-cat="tools"><svg class="i" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5 5L4 17l3 3 5.7-5.7a4 4 0 0 0 5-5l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>Page tools</a>
+      <a href="#privacy" data-cat="privacy"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>Privacy &amp; security</a>
+      <a href="#storage" data-cat="storage"><svg class="i" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.300 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.300 7-3v-6"/></svg>Storage &amp; clean-up</a>
+      <a href="#backup" data-cat="backup"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Import &amp; export</a>
+      <a href="#danger" data-cat="danger" class="sp-danger-link"><svg class="i" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.3v.1"/></svg>Danger zone</a>
+      <span class="sp-label sp-gap">Support</span>
+      <a href="https://socialmania99.com/copyit/" target="_blank" rel="noopener noreferrer" class="ext"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17v.1"/></svg>Contact us<svg class="i ex" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+      <a href="https://socialmania99.com/copyit/docs.html" target="_blank" rel="noopener noreferrer" class="ext"><svg class="i" viewBox="0 0 24 24"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/></svg>Docs &amp; Guide<svg class="i ex" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+    </nav>
+    <span class="sp-ver" id="spVer">v1.1.0</span>
+  </aside>
+
+  <main class="sp-main">
+    <header class="sp-top">
+      <button type="button" class="sp-menu" id="spMenu" aria-label="Show settings categories" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+      <h1 id="spTitle">General</h1>
+      <span class="spacer"></span>
+      <button type="button" class="btn sm sp-back-top" id="backDash2"><svg class="i" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Back to Dashboard</button>
+    </header>
+
+    <section class="sp-panel" id="cat-general" data-panel="general">
+      <div class="sp-card"><h2>Appearance</h2><p class="sp-sub">Choose light, dark or automatic, and a colour theme.</p><div id="setTheme"></div></div>
+      <div class="sp-card"><h2>About Copyit</h2>
+        <div class="set-row nohover"><span><b>Version</b><small id="aboutVer">1.1.0</small></span><a class="btn sm" href="https://github.com/Socialmania99/Copyit/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">What's new</a></div>
+        <div class="set-row nohover"><span><b>Support email</b><small>socialmania99@gmail.com</small></span><button type="button" class="btn sm" id="copyMail">Copy email</button></div>
+        <div class="set-row nohover"><span><b>Website</b><small>https://socialmania99.com/copyit/</small></span><a class="btn sm" href="https://socialmania99.com/copyit/" target="_blank" rel="noopener noreferrer">Open website</a></div>
+        <div class="set-row nohover"><span><b>Open source</b><small>Free for everyone. Source code and issue tracker on GitHub.</small></span><a class="btn sm" href="https://github.com/Socialmania99/Copyit" target="_blank" rel="noopener noreferrer">GitHub</a></div>
+        <div class="set-row nohover"><span><b>Privacy policy</b><small>Everything stays on your device. No account, no tracking.</small></span><a class="btn sm" href="https://socialmania99.com/copyit/privacy.html" target="_blank" rel="noopener noreferrer">Read policy</a></div>
+        <div class="set-row nohover"><span><b>Support Copyit</b><small>Copyit is free. A coffee keeps it growing.</small></span><button type="button" class="btn sm primary" id="donate">Buy me a coffee</button></div>
+      </div>
+    </section>
+
+    <section class="sp-panel" id="cat-tools" data-panel="tools" hidden>
+      <div class="sp-card"><h2>Page tools</h2><p class="sp-sub">Optional helpers that work on the websites you browse. Both are off until you switch them on. Chrome asks once to allow Copyit on websites, and the permission is given back when you turn them off.</p><div id="toolsHost"></div></div>
+      <div class="sp-card"><h2>Pop-out player</h2><p class="sp-sub">Open a video or audio you saved in Copyit in the preview window, then press the pop-out button. It works only for media saved in Copyit and never touches the tabs you browse, so it has no switch here.</p></div>
+    </section>
+
+    <section class="sp-panel" id="cat-privacy" data-panel="privacy" hidden>
+      <div class="sp-card"><h2>Privacy &amp; security</h2>
+        <label class="set-row"><span><b>Blur sensitive clips</b><small>Hides passwords, API keys, private keys, JWTs and card numbers until you press Reveal.</small></span><input type="checkbox" id="setBlur" class="switch"></label>
+        <label class="set-row"><span><b>Preview links on hover</b><small>Opens a popup of the page, image, video or PDF a link points to. This loads the site, so turn it off if you want zero network requests.</small></span><input type="checkbox" id="setLink" class="switch"></label>
+        <label class="set-row"><span><b>Leave sensitive clips out of backups</b><small>Skips them when you export JSON or CSV.</small></span><input type="checkbox" id="setExcl" class="switch"></label>
+      </div>
+    </section>
+
+    <section class="sp-panel" id="cat-storage" data-panel="storage" hidden>
+      <div class="sp-card"><h2>Storage &amp; clean-up</h2>
+        <label class="set-row"><span><b>Delete clips older than</b><small>Pinned and starred clips are always kept.</small></span><select id="setDays"><option value="0">Never</option><option value="7">7 days</option><option value="30">30 days</option><option value="90">90 days</option><option value="365">1 year</option></select></label>
+        <label class="set-row"><span><b>Keep at most</b><small>The oldest unpinned, unstarred clips go first.</small></span><select id="setMax"><option value="100">100 clips</option><option value="250">250 clips</option><option value="500">500 clips</option><option value="1000">1,000 clips</option><option value="5000">5,000 clips</option><option value="0">No limit</option></select></label>
+        <p class="storage" id="storageText"></p>
+      </div>
+    </section>
+
+    <section class="sp-panel" id="cat-backup" data-panel="backup" hidden>
+      <div class="sp-card"><h2>Import &amp; export</h2>
+        <div class="set-row nohover"><span><b>Import files</b><small>Pick one or more files: a Copyit backup (.json), .csv, text, Markdown, HTML, SVG, images or videos. Backups are merged without duplicates.</small></span><button type="button" id="importAny" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>Choose files</button></div>
+        <div class="set-row nohover"><span><b>Export your clips</b><small>JSON is a full backup with images and videos. CSV, text and Markdown hold text clips only.</small></span></div>
+        <div class="dt-btns"><button type="button" id="exportJson" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>JSON backup</button><button type="button" id="exportCsv" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>CSV</button><button type="button" id="exportTxt" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Text (.txt)</button><button type="button" id="exportMd" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Markdown (.md)</button></div>
+      </div>
+    </section>
+
+    <section class="sp-panel" id="cat-danger" data-panel="danger" hidden>
+      <div class="sp-card danger"><h2><svg class="i" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.3v.1"/></svg>Danger zone</h2>
+        <label class="set-row"><span><b>Include pinned &amp; starred</b><small>Off: they are kept. On: everything goes.</small></span><input type="checkbox" id="clearIncl" class="switch"></label>
+        <div class="set-row nohover"><span><b>Clear all clips</b><small>Deletes saved clips with their images and videos from this device. Folders stay. You get a few seconds to undo.</small></span><button type="button" id="clearAll" class="btn danger-btn sm">Clear all clips</button></div>
+      </div>
+    </section>
+  </main>
+</div>
+<div class="sp-scrim" id="spScrim" hidden></div>
+<div id="toasts" aria-live="polite"></div>
+<input id="anyFile" type="file" multiple accept=".json,.csv,.txt,.md,.markdown,.html,.htm,.svg,text/*,image/*,video/*,application/json" hidden>
+<script src="lib.js"></script>
+<script src="qrcode.js"></script>
+<script src="app.js"></script>
+<script src="tools.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>

@@ -3,14 +3,13 @@
   "name": "Copyit",
   "version": "1.1.0",
   "minimum_chrome_version": "109",
-  "description": "Copyit \u2014 save text, links, code, rich text and images you copy. Click any text to copy it, copy text out of images and videos, search, tag and back up locally.",
+  "description": "Clipboard history. Save text, links, code and images, click to copy, copy text from images, search and back up locally.",
   "permissions": [
     "storage",
     "unlimitedStorage",
     "contextMenus",
     "clipboardRead",
     "clipboardWrite",
-    "downloads",
     "activeTab",
     "scripting",
     "offscreen",
@@ -48,5 +47,5 @@
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   },
-  "options_page": "dashboard.html"
+  "options_page": "settings.html"
 }

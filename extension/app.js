@@ -1,6 +1,8 @@
 const { FOLDERS: FOLDERS_KEY, MAX_VIDEO_BYTES, BLOB_KINDS, videoEmbed, DONATE_PROVIDERS, DONATE_DEFAULTS, donateUrl, KEY, BLOB_PREFIX, SETTINGS: SETTINGS_KEY, DEFAULT_SETTINGS, MAX_IMAGE_BYTES, esc, norm, stamp, parseCsvRows, csvInfo, jsonInfo, svgDataUri, dataUriMime, domainOf, mdToHtml, LANG_LABEL, languageOf, detectKind, sensitiveOf, htmlFeatures, cleanTags, sha, kindOfEntry, applyRetention } = CopyitLib;
 const $ = id => document.getElementById(id);
 const isDash = document.body.classList.contains('dashboard');
+const isSet = document.body.classList.contains('settingspage');
+const POP = document.body.classList.contains('popup');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 // two themes: "color" (flat multicolor, default) and "mono" (black & white with gradient)
@@ -103,12 +105,13 @@ const TYPES = {
   markdown: { label: 'Markdown' }, svg: { label: 'SVG' }, image: { label: 'Images' }, video: { label: 'Videos' }, datauri: { label: 'Data URI' }, rich: { label: 'Rich text' }
 };
 const TYPE_ORDER = ['text', 'link', 'code', 'json', 'csv', 'markdown', 'svg', 'image', 'video', 'datauri', 'rich'];
-const isMediaKind = (x, k) => (k === 'link' && (MEDIA_URL.test(String(x.content || '').trim()) || !!videoEmbed(String(x.content || '')))) || k === 'image' || k === 'video' || k === 'svg' || (k === 'datauri' && /^(image|video)\/|^application\/pdf$/.test(dataUriMime(String(x.content || ''))));
+const isMediaKind = (x, k) => (k === 'link' && (MEDIA_URL.test(String(x.content || '').trim()) || !!videoEmbed(String(x.content || '')))) || k === 'image' || k === 'video' || k === 'svg' || (k === 'datauri' && /^(image|video|audio)\/|^application\/pdf$/.test(dataUriMime(String(x.content || ''))));
 const VIEW_KINDS = ['text', 'link', 'code', 'rich', 'json', 'csv', 'markdown'];
 const canPreview = (x, k) => isMediaKind(x, k) || (k === 'link' && /^https?:\/\//i.test(String(x.content || '').trim()));
 const hasBlob = x => BLOB_KINDS.includes(x.kind);
-const MEDIA_URL = /^https?:\/\/\S+\.(png|jpe?g|gif|webp|avif|bmp|svg|ico|mp4|webm|mov|m4v|ogv|pdf)(\?\S*)?(#\S*)?$/i;
+const MEDIA_URL = /^https?:\/\/\S+\.(png|jpe?g|gif|webp|avif|bmp|svg|ico|mp4|webm|mov|m4v|ogv|mp3|wav|oga|m4a|aac|flac|opus|pdf)(\?\S*)?(#\S*)?$/i;
 const VIDEO_URL = /\.(mp4|webm|mov|m4v|ogv)(\?|#|$)/i;
+const AUDIO_URL = /\.(mp3|wav|oga|m4a|aac|flac|opus)(\?|#|$)/i;
 const mediaUrl = x => kindOf(x) === 'link' && MEDIA_URL.test(String(x.content || '').trim());
 const fmtDur = s => { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); };
 const ALWAYS_CHIPS = ['text', 'link', 'code'];
@@ -252,7 +255,7 @@ function previewHtml(x, kind, q) {
     case 'code': return raw('code');
     case 'rich': return raw('') + `<div class="fmtline"><span class="fmt-pill">Keeps formatting</span>${htmlFeatures(x.html).map(f => `<span class="fmt-pill">${f}</span>`).join('')}</div>`;
     case 'link': { const u = c.trim(), ok = /^https?:\/\//i.test(u), uk = ok ? urlKind(u) : '';
-      const em = ok ? videoEmbed(u) : null, lab = em ? em.label : ({ image: 'Image link', svg: 'Vector link', video: 'Video link', pdf: 'PDF link', web: 'Website' }[uk] || '');
+      const em = ok ? videoEmbed(u) : null, lab = em ? em.label : ({ image: 'Image link', svg: 'Vector link', video: 'Video link', audio: 'Audio link', pdf: 'PDF link', web: 'Website' }[uk] || '');
       const thumb = em && em.thumb && settings.linkPreview !== false ? `<div class="imgwrap vidwrap" data-peek="yt"><img class="thumb" alt="${esc(em.label)} thumbnail" loading="lazy" src="${esc(em.thumb)}" onerror="this.parentNode.remove()"><span class="playbadge">${ICON.video}${esc(em.provider === 'youtube' ? 'YouTube' : 'Vimeo')}</span></div>` : '';
       return raw('') + thumb + (domainOf(c) ? `<div class="linkline">${ICON.link}${esc(domainOf(c))}${lab ? `<span class="fmt-pill">${lab}</span>` : ''}</div>` : ''); }
     default: return raw('');
@@ -272,6 +275,9 @@ function entryHtml(x, q, delay, isNew) {
   const lang = kind === 'code' ? (x.lang || languageOf(c)) : '';
   const kindPill = ['json', 'csv', 'markdown', 'svg', 'image', 'video', 'datauri', 'rich'].includes(kind) ? TYPES[kind].label.replace(/s$/, '') : (lang && lang !== 'code' ? LANG_LABEL[lang] || lang : '');
   const tags = (x.tags || []).map(t => `<button class="tag${t === activeTag ? ' on' : ''}" data-action="tag" data-tag="${esc(t)}">#${esc(t)}</button>`).join('');
+  const topBtns = `<button class="ib" data-action="share" title="Scan to open on your phone">${SH_ICON.qr}</button>
+        <button class="ib${x.favorite ? ' on' : ''}" data-action="favorite" title="${x.favorite ? 'Remove star' : 'Star entry'}">${ICON.star}</button>
+        <button class="ib${x.pinned ? ' on' : ''}" data-action="pin" title="${x.pinned ? 'Unpin entry' : 'Pin entry'}">${ICON.pin}</button>`;
   return `<article class="entry t-${kind}${x.pinned ? ' is-pinned' : ''}${isNew ? ' enter' : ''}${editing ? ' editing' : ''}" data-id="${esc(x.id)}" style="--d:${delay}ms">
     <div class="tile" title="${esc(TYPES[kind]?.label || kind)}">${ICON[kind] || ICON.text}</div>
     <div class="main">
@@ -282,18 +288,17 @@ function entryHtml(x, q, delay, isNew) {
         ${kindPill ? `<span class="kpill">${esc(kindPill)}</span>` : ''}
         ${folderOf(x) ? `<button class="fpill" data-action="openfolder" title="Open folder">${ICON.folder}${esc(folderOf(x).name)}</button>` : ''}
         <span class="spacer"></span>
-        <button class="ib" data-action="share" title="Scan to open on your phone">${SH_ICON.qr}</button>
-        <button class="ib${x.favorite ? ' on' : ''}" data-action="favorite" title="${x.favorite ? 'Remove star' : 'Star entry'}">${ICON.star}</button>
-        <button class="ib${x.pinned ? ' on' : ''}" data-action="pin" title="${x.pinned ? 'Unpin entry' : 'Pin entry'}">${ICON.pin}</button>
+        ${POP ? '' : topBtns}
       </div>
       ${sens ? `<div class="sens">${ICON.lock}Sensitive · ${esc(sens)}</div>` : ''}
       <div class="pv${blur ? ' blurred' : ''}">${previewHtml(x, kind, q)}${blur ? `<button class="reveal" data-action="reveal">${ICON.eye}Reveal</button>` : ''}</div>
       ${tags ? `<div class="tags">${tags}</div>` : ''}
       ${long ? '<button class="more" data-action="toggle">Show more</button>' : ''}
-      ${VIEW_KINDS.includes(kind) || canPreview(x, kind) ? `<div class="pvrow"><button class="btn sm pvbtn" data-action="view" title="Preview this clip in a window${VIEW_KINDS.includes(kind) ? ', edit it and save changes' : ''}">${ICON.eye}<span>Preview</span></button></div>` : ''}
+      ${!POP && (VIEW_KINDS.includes(kind) || canPreview(x, kind)) ? `<div class="pvrow"><button class="btn sm pvbtn" data-action="view" title="Preview this clip in a window${VIEW_KINDS.includes(kind) ? ', edit it and save changes' : ''}">${ICON.eye}<span>Preview</span></button></div>` : ''}
       <div class="entry-foot">
-        <span class="stat-line">${esc(statLine(x, kind))}</span>
+        ${POP ? topBtns : `<span class="stat-line">${esc(statLine(x, kind))}</span>`}
         <span class="spacer"></span>
+        ${POP && (VIEW_KINDS.includes(kind) || canPreview(x, kind)) ? `<button class="ib" data-action="view" title="Preview in the dashboard">${ICON.eye}</button>` : ''}
         ${kind === 'link' ? `<button class="ib" data-action="open" title="Open link">${ICON.open}</button>` : ''}
         <button class="ib" data-action="edit" title="${isImg ? 'Edit tags' : 'Edit entry'}">${ICON.edit}</button>
         <button class="ib" data-action="menu" title="Copy as, download and more">${ICON.more}</button>
@@ -822,7 +827,7 @@ $('list')?.addEventListener('wheel', e => {
   a.raf = requestAnimationFrame(step);
 }, { passive: false });
 
-const urlKind = u => videoEmbed(u) ? 'embed' : /\.pdf(\?|#|$)/i.test(u) ? 'pdf' : VIDEO_URL.test(u) ? 'video' : /\.svg(\?|#|$)/i.test(u) ? 'svg' : /\.(png|jpe?g|gif|webp|avif|bmp|ico)(\?|#|$)/i.test(u) ? 'image' : 'web';
+const urlKind = u => videoEmbed(u) ? 'embed' : /\.pdf(\?|#|$)/i.test(u) ? 'pdf' : VIDEO_URL.test(u) ? 'video' : AUDIO_URL.test(u) ? 'audio' : /\.svg(\?|#|$)/i.test(u) ? 'svg' : /\.(png|jpe?g|gif|webp|avif|bmp|ico)(\?|#|$)/i.test(u) ? 'image' : 'web';
 const safeUrl = u => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : ''; } catch { return ''; } };
 
 /* ───────────── click a media clip or media link: full viewer ───────────── */
@@ -837,7 +842,7 @@ async function describeMedia(x) {
   if (kind === 'video') { const u = await getBlob(x.id); if (!u) throw new Error('The video data is missing'); const b = dataUrlToBlob(u); return { type: 'video', src: URL.createObjectURL(b), blob: () => b, name: `copyit-video.${(x.image.mime.split('/')[1] || 'mp4').replace('quicktime', 'mov')}`, title: 'Video', sub: statLine(x, kind) }; }
   if (kind === 'svg') return { type: 'svg', src: svgDataUri(c), blob: () => new Blob([c], { type: 'image/svg+xml' }), name: 'copyit-vector.svg', title: 'Vector (SVG)', sub: statLine(x, kind), copy: c };
   if (kind === 'datauri') {
-    const m = dataUriMime(c), b = dataUrlToBlob(c), t = m.startsWith('video/') ? 'video' : m === 'application/pdf' ? 'pdf' : m === 'image/svg+xml' ? 'svg' : 'image';
+    const m = dataUriMime(c), b = dataUrlToBlob(c), t = m.startsWith('video/') ? 'video' : m.startsWith('audio/') ? 'audio' : m === 'application/pdf' ? 'pdf' : m === 'image/svg+xml' ? 'svg' : 'image';
     return { type: t, src: t === 'image' || t === 'svg' ? c : URL.createObjectURL(b), blob: () => b, name: `copyit-data.${(m.split('/')[1] || 'bin').split('+')[0]}`, title: 'Data URI', sub: statLine(x, kind), copy: c };
   }
   return null;
@@ -1018,8 +1023,14 @@ function clearAll() {
 }
 
 /* ───────────── settings (dashboard) ───────────── */
-async function openSettings() {
-  const d = $('settingsDialog'); if (!d) return;
+const SET_URL = chrome.runtime.getURL('settings.html');
+async function openSettingsPage(cat) {                 // Settings is its own page: reuse an open one, otherwise open it in this tab (dashboard) or a new tab (popup)
+  const url = SET_URL + (cat ? '#' + cat : '');
+  try { const t = (await chrome.tabs.query({ url: SET_URL + '*' }))[0]; if (t) { await chrome.tabs.update(t.id, { active: true, url }); try { await chrome.windows.update(t.windowId, { focused: true }); } catch { } if (!isDash) window.close(); return; } } catch { }
+  if (isDash) { location.href = url; return; }
+  await chrome.tabs.create({ url }); window.close();
+}
+async function fillSettingsPage() {
   $('setBlur').checked = !!settings.blur;
   $('setExcl').checked = !!settings.excludeSensitiveFromExport;
   $('setLink').checked = settings.linkPreview !== false;
@@ -1028,7 +1039,6 @@ async function openSettings() {
   const imgs = entries.filter(hasBlob).length;
   let bytes = 0; try { bytes = await chrome.storage.local.getBytesInUse(null); } catch { }
   $('storageText').textContent = `${fmtBytes(bytes)} used · ${plural(entries.length, 'clip')}${imgs ? ` · ${plural(imgs, 'image/video')}` : ''}`;
-  d.showModal();
 }
 async function saveSettings() {
   settings = { ...settings, blur: $('setBlur').checked, excludeSensitiveFromExport: $('setExcl').checked, linkPreview: $('setLink').checked, keepDays: +$('setDays').value, maxEntries: +$('setMax').value };
@@ -1037,6 +1047,7 @@ async function saveSettings() {
   await autoClean();
   if (entries.length !== before) { toast(`Removed ${plural(before - entries.length, 'old clip')}`); pruneBlobs(); }
   render();
+  if (isSet) fillSettingsPage();
 }
 
 /* ───────────── events ───────────── */
@@ -1052,15 +1063,15 @@ function reveal(el, apply) {                           // circular colour reveal
   } else apply();
 }
 const MODES = [{ id: 'light', name: 'Light', icon: ICON.sun }, { id: 'dark', name: 'Dark', icon: ICON.moon }, { id: 'auto', name: 'Auto', icon: ICON.auto }];
-function buildPalette() {
+function buildPalette(host) {
   const pal = document.createElement('div');
-  pal.id = 'palette'; pal.className = 'palette'; pal.hidden = true;
+  pal.id = 'palette'; pal.className = 'palette inline'; pal.hidden = false;
   pal.innerHTML = `<div class="pal-label">Appearance</div>
     <div class="mode"><span class="thumb"></span>${MODES.map(m => `<button data-mode="${m.id}" title="${m.name}">${m.icon}${m.name}</button>`).join('')}</div>
     <div class="pal-label">Theme</div>
     <div class="pal-grid">${THEMES.map((t, i) =>
     `<button class="pal" data-theme-id="${t.id}" title="${t.name}" style="--i:${i};--pg:linear-gradient(180deg,${t.c[0]},${t.c[1]});--pc:${t.c[1]};--pt:${t.t}">${ICON.check}</button>`).join('')}</div><div class="pal-name"></div>`;
-  document.body.append(pal);
+  host.append(pal);
   const label = pal.querySelector('.pal-name'), thumb = pal.querySelector('.mode .thumb');
   const mark = () => {
     pal.querySelectorAll('.pal').forEach(b => b.classList.toggle('on', b.dataset.themeId === curTheme()));
@@ -1083,14 +1094,7 @@ function buildPalette() {
   mark(); showName();
   return { pal, mark, showName };
 }
-const palette = $('themeBtn') ? buildPalette() : null;
-$('themeBtn')?.addEventListener('click', e => {
-  e.stopPropagation();
-  const open = palette.pal.hidden; palette.pal.hidden = !open;
-  if (open) { palette.mark(); palette.showName(); }
-});
-document.addEventListener('click', e => { if (palette && !palette.pal.hidden && !e.target.closest('#palette')) palette.pal.hidden = true; });
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && palette) palette.pal.hidden = true; });
+const palette = $('setTheme') ? buildPalette($('setTheme')) : null;   // the theme picker lives in Settings
 $('typeChips')?.addEventListener('click', e => {
   const b = e.target.closest('button[data-type]'); if (!b) return;
   typeFilter = b.dataset.type;
@@ -1104,7 +1108,25 @@ $('tagBar')?.addEventListener('click', e => {
 $('search')?.addEventListener('input', render);
 $('saveClipboard')?.addEventListener('click', saveClipboard);
 document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click', openAdd));
-$('webBtn')?.addEventListener('click', () => chrome.tabs.create({ url: 'https://www.socialmania99.com/' }));
+// popup: type chips scroll with the mouse wheel, and a button shows them all or folds them back
+(() => {
+  const row = $('chipRow'), chips = $('typeChips'), tg = $('chipsToggle'); if (!row || !chips || !tg) return;
+  chips.addEventListener('wheel', e => { if (row.classList.contains('open')) return; if (chips.scrollWidth <= chips.clientWidth) return; e.preventDefault(); chips.scrollLeft += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY); }, { passive: false });
+  tg.addEventListener('click', () => { const o = row.classList.toggle('open'); tg.setAttribute('aria-expanded', String(o)); const t = o ? 'Show fewer types' : 'Show all types'; tg.title = t; tg.setAttribute('aria-label', t); chips.scrollLeft = 0; });
+  const SUPPORT = 'socialmania99@gmail.com', btn = $('chatBtn'), menu = $('chatMenu'); if (!btn || !menu) return;
+  const shut = () => { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
+  btn.addEventListener('click', e => { e.stopPropagation(); menu.hidden = !menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); });
+  document.addEventListener('click', e => { if (!menu.hidden && !e.target.closest('.cwrap')) shut(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { shut(); btn.focus(); } });
+  menu.addEventListener('click', async e => {
+    const b = e.target.closest('[data-c]'); if (!b) return; shut();
+    const k = b.dataset.c;
+    if (k === 'email') { try { await navigator.clipboard.writeText(SUPPORT); toast('Support email copied'); } catch { toast('Could not copy. Write to ' + SUPPORT, 'err'); } }
+    else if (k === 'coffee') openDonate();
+    else if (k === 'feedback') chrome.tabs.create({ url: 'https://github.com/Socialmania99/Copyit/issues/new' });
+    else if (k === 'docs') chrome.tabs.create({ url: 'https://socialmania99.com/copyit/docs.html' });
+  });
+})();
 // Open the dashboard once: focus a tab that already has it, otherwise create one.
 const DASH_URL = chrome.runtime.getURL('dashboard.html');
 async function openDashboard(opts = {}) {
@@ -1116,6 +1138,7 @@ async function openDashboard(opts = {}) {
       if (dashTab) { const t = await chrome.tabs.get(dashTab); if (t && (!t.url || t.url.startsWith(DASH_URL))) tab = t; }
     } catch {}
   }
+  if (tab && isSet) { try { const cur = await chrome.tabs.getCurrent(); if (cur && cur.id === tab.id) tab = null; } catch { } }
   if (tab) {
     try { await chrome.tabs.update(tab.id, { active: true }); } catch { tab = null; }
     if (tab) {
@@ -1124,6 +1147,7 @@ async function openDashboard(opts = {}) {
       if (opts.view) { try { await chrome.runtime.sendMessage({ type: 'dashView', id: opts.view }); } catch {} }
     }
   }
+  if (!tab && isSet) { location.href = DASH_URL; return; }
   if (!tab) await chrome.tabs.create({ url: DASH_URL + (opts.settings ? '#settings' : opts.view ? '#view=' + encodeURIComponent(opts.view) : '') });
   if (!isDash) window.close();
 }
@@ -1138,10 +1162,10 @@ $('importJson')?.addEventListener('click', () => $('jsonFile').click());
 $('importCsv')?.addEventListener('click', () => $('csvFile').click());
 $('jsonFile')?.addEventListener('change', async e => { await importFile(e.target.files[0]); e.target.value = ''; });
 $('csvFile')?.addEventListener('change', async e => { await importFile(e.target.files[0]); e.target.value = ''; });
-$('openSettings')?.addEventListener('click', openSettings);
-$('settingsClose')?.addEventListener('click', () => $('settingsDialog').close());
+$('openSettings')?.addEventListener('click', () => openSettingsPage());
+$('backDash')?.addEventListener('click', () => openDashboard());
+$('backDash2')?.addEventListener('click', () => openDashboard());
 ['setBlur', 'setExcl', 'setDays', 'setMax', 'setLink'].forEach(id => $(id)?.addEventListener('change', saveSettings));
-$('settingsDialog')?.addEventListener('click', e => { if (e.target === $('settingsDialog')) $('settingsDialog').close(); });
 
 $('filterChips')?.addEventListener('click', e => {
   const b = e.target.closest('button[data-filter]'); if (!b) return;
@@ -1222,7 +1246,7 @@ function vwPlace(b) { const d = vwDlg(); d.classList.add('sized'); d.style.inset
 function vwPaintBtns() {
   const mn = $('vwMin'), mx = $('vwMax');
   mn.title = vwState === 'min' ? 'Restore' : 'Minimize'; mx.title = vwState === 'max' ? 'Restore size' : 'Maximize';
-  mn.innerHTML = vwState === 'min' ? '<svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>' : '<svg class="i" viewBox="0 0 24 24"><path d="M6 18h12"/></svg>';
+  mn.innerHTML = vwState === 'min' ? '<svg class="i" viewBox="0 0 24 24"><rect x="8.5" y="4.5" width="11" height="11" rx="1.5"/><path d="M15.5 8.5h-9v11h11v-4"/></svg>' : '<svg class="i" viewBox="0 0 24 24"><path d="M6 12h12"/></svg>';
   mx.innerHTML = vwState === 'max' ? '<svg class="i" viewBox="0 0 24 24"><rect x="8.5" y="4.5" width="11" height="11" rx="1.5"/><path d="M15.5 8.5h-9v11h11v-4"/></svg>' : '<svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg>';
   vwDlg().classList.toggle('min', vwState === 'min'); vwDlg().classList.toggle('max', vwState === 'max');
 }
@@ -1286,10 +1310,16 @@ async function loadWebFrame(url) {
 /* ───────────── preview window: read a text clip, edit it, discard or save ───────────── */
 let vwItem = null;
 const vwKind = x => kindOf(x);
+$('vwPip')?.addEventListener('click', async () => {
+  const el = $('vwBody').querySelector('video,audio');
+  const r = await (window.CopyitPip ? window.CopyitPip.open(el, ($('vwTitle').textContent || 'Copyit') + ' · Copyit') : { ok: false, msg: 'Pop-out is not available' });
+  if (!r.ok) toast(r.msg, 'err');
+});
 function viewById(id) { const x = entries.find(i => i.id === id); if (x) openViewer(x); else toast('That clip no longer exists.', 'err'); }
 let vwMedia = null;
 function mediaHtml(d) {
   return d.type === 'video' ? `<video src="${esc(d.src)}" controls autoplay loop playsinline></video>`
+    : d.type === 'audio' ? `<div class="vw-audio"><audio src="${esc(d.src)}" controls autoplay playsinline></audio></div>`
     : d.type === 'embed' ? `<iframe class="vw-frame" src="${esc(d.src)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe><p class="vw-hint">Video not playing? <a href="${esc(d.openUrl || d.src)}" target="_blank" rel="noopener noreferrer">Watch it on the original site</a></p>`
     : d.type === 'pdf' ? `<iframe class="vw-frame" src="${esc(d.src)}"></iframe>`
     : d.type === 'web' ? `<iframe class="vw-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="no-referrer"></iframe><p class="vw-hint">Pages that need you to sign in, like Google Docs, may not show here. Use Open in new tab.</p>`
@@ -1300,12 +1330,13 @@ function vwRender(x) {
   $('vwTile').innerHTML = ICON[k] || ICON.text;
   $('vwTitle').textContent = d ? d.title : (TYPES[k]?.label || 'Text').replace(/s$/, '') + ' clip';
   $('vwSub').textContent = `${srcOf(x).label} · ${dateText(x.copiedAt || x.createdAt)} · ${statLine(x, k)}`.replace(/^ · /, '');
+  $('vwPip').hidden = !(d && (d.type === 'video' || d.type === 'audio'));
   body.classList.toggle('media', !!d); body.classList.toggle('checker', !!d && d.type === 'svg');
   if (d) {
     const u = c.trim();
     body.innerHTML = mediaHtml(d) + (k === 'link' ? `<div class="vw-url"><a class="vw-link" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${esc(u)}</a></div>` : '');
     if (d.type === 'web') loadWebFrame(d.src);
-    const v = body.querySelector('video'); if (v) v.play().catch(() => { v.muted = true; v.play().catch(() => { }); });
+    const v = body.querySelector('video,audio'); if (v) v.play().catch(() => { v.muted = true; v.play().catch(() => { }); });
   } else if (k === 'rich' && x.html) {
     body.innerHTML = '<iframe class="vw-rich" sandbox="" referrerpolicy="no-referrer"></iframe>';
     body.firstChild.srcdoc = `<meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data: https:; style-src 'unsafe-inline'"><base target="_blank"><body style="font:14px/1.6 system-ui,sans-serif;color:#222;margin:12px">${x.html}</body>`;
@@ -1508,13 +1539,14 @@ function openDonate() {
   renderDonate(); donateDlg.showModal();
 }
 $('donate')?.addEventListener('click', openDonate);
-$('popSettings')?.addEventListener('click', () => openDashboard({ settings: true }));
+$('popSettings')?.addEventListener('click', () => openSettingsPage());
 const boot = () => load().then(() => {
-  if (isDash && location.hash === '#settings') openSettings();
+  if (isDash && location.hash === '#settings') { location.replace(SET_URL); return; }
+  if (isSet) fillSettingsPage();
   if (isDash && /^#view=/.test(location.hash)) { const id = decodeURIComponent(location.hash.slice(6)); history.replaceState(null, '', location.pathname); viewById(id); }
   if (isDash) {
     chrome.tabs.getCurrent().then(t => t && chrome.storage.session.set({ dashTab: t.id })).catch(() => {});
-    chrome.runtime.onMessage.addListener(m => { if (m && m.type === 'dashSettings') openSettings(); else if (m && m.type === 'dashView') viewById(m.id); });
+    chrome.runtime.onMessage.addListener(m => { if (m && m.type === 'dashSettings') openSettingsPage(); else if (m && m.type === 'dashView') viewById(m.id); });
   }
 });
 document.readyState === 'loading' ? addEventListener('DOMContentLoaded', boot) : boot();   // after share.js has loaded

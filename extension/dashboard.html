@@ -19,12 +19,9 @@
       <p>Your saved text, links, code, rich text, images and videos, all stored locally in Chrome.</p>
     </div>
   </div>
-  <div class="actions"><button id="themeBtn" class="ib lg" title="Switch theme"><span class="sw"></span></button>
-    <button id="openSettings" class="ib lg" title="Settings"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+  <div class="actions"><button id="openSettings" class="ib lg" title="Settings"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <button id="saveClipboard" class="btn primary"><span class="spin"></span><svg class="i" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="3"/><path d="M9 4V3h6v1M12 9v6M9.5 12.5L12 15l2.5-2.5"/></svg><span>Save clipboard</span></button>
-    <button id="manualAdd" data-add class="btn primary"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add text</button>
-    
-    <button id="webBtn" class="ib lg" title="Visit socialmania99.com"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.7 3.9 5.7 3.9 9s-1.3 6.3-3.9 9c-2.6-2.7-3.9-5.7-3.9-9S9.4 5.7 12 3z"/></svg></button><button id="donate" class="ib lg donate" title="Support Copyit"><svg class="i" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.7-8-10.4A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.5c0 5.7-8 10.4-8 10.4z"/></svg></button>
+    <button id="manualAdd" data-add class="btn primary"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add text</button><button id="donate" class="ib lg donate" title="Support Copyit"><svg class="i" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.7-8-10.4A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.5c0 5.7-8 10.4-8 10.4z"/></svg></button>
   </div>
 </header>
 
@@ -75,30 +72,6 @@
 
 <button class="fab" data-add title="Add text"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
 
-<dialog id="settingsDialog">
-  <div class="set">
-    <h2>Settings</h2>
-    <p>Privacy and storage rules for your vault. Changes save as you make them.</p>
-    <label class="set-row"><span><b>Blur sensitive clips</b><small>Hides passwords, API keys, private keys, JWTs and card numbers until you press Reveal.</small></span><input type="checkbox" id="setBlur" class="switch"></label>
-    <label class="set-row"><span><b>Preview links on hover</b><small>Opens a popup of the page, image, video or PDF a link points to. This loads the site, so turn it off if you want zero network requests.</small></span><input type="checkbox" id="setLink" class="switch"></label>
-    <label class="set-row"><span><b>Leave sensitive clips out of backups</b><small>Skips them when you export JSON or CSV.</small></span><input type="checkbox" id="setExcl" class="switch"></label>
-    <label class="set-row"><span><b>Delete clips older than</b><small>Pinned and starred clips are always kept.</small></span><select id="setDays"><option value="0">Never</option><option value="7">7 days</option><option value="30">30 days</option><option value="90">90 days</option><option value="365">1 year</option></select></label>
-    <label class="set-row"><span><b>Keep at most</b><small>The oldest unpinned, unstarred clips go first.</small></span><select id="setMax"><option value="100">100 clips</option><option value="250">250 clips</option><option value="500">500 clips</option><option value="1000">1,000 clips</option><option value="5000">5,000 clips</option><option value="0">No limit</option></select></label>
-    <section class="datasec" aria-labelledby="dtTitle">
-      <h3 id="dtTitle">Import &amp; export</h3>
-      <div class="set-row nohover"><span><b>Import files</b><small>Pick one or more files: a Copyit backup (.json), .csv, text, Markdown, HTML, SVG, images or videos. Backups are merged without duplicates.</small></span><button type="button" id="importAny" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg>Choose files</button></div>
-      <div class="set-row nohover"><span><b>Export your clips</b><small>JSON is a full backup with images and videos. CSV, text and Markdown hold text clips only.</small></span></div>
-      <div class="dt-btns"><button type="button" id="exportJson" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>JSON backup</button><button type="button" id="exportCsv" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>CSV</button><button type="button" id="exportTxt" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Text (.txt)</button><button type="button" id="exportMd" class="btn sm"><svg class="i" viewBox="0 0 24 24"><path d="M12 4v12M7 11l5 5 5-5M5 20h14"/></svg>Markdown (.md)</button></div>
-    </section>
-    <p class="storage" id="storageText"></p>
-    <section class="danger" aria-labelledby="dzTitle">
-      <h3 id="dzTitle"><svg class="i" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17.3v.1"/></svg>Danger zone</h3>
-      <label class="set-row"><span><b>Include pinned &amp; starred</b><small>Off: they are kept. On: everything goes.</small></span><input type="checkbox" id="clearIncl" class="switch"></label>
-      <div class="set-row nohover"><span><b>Clear all clips</b><small>Deletes saved clips with their images and videos from this device. Folders stay. You get a few seconds to undo.</small></span><button type="button" id="clearAll" class="btn danger-btn sm">Clear all clips</button></div>
-    </section>
-    <div class="dlg-foot"><span class="spacer"></span><button type="button" class="btn primary sm" id="settingsClose">Done</button></div>
-  </div>
-</dialog>
 <div id="dropzone"><div><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></svg><b>Drop files to save or import</b><span>images, videos, text, .json, .csv</span></div></div>
 
 <dialog id="addDialog">
@@ -110,7 +83,7 @@
   </form>
 </dialog>
 <dialog id="viewDialog">
-  <div class="vw-head" id="vwHead"><span class="vw-tile" id="vwTile"></span><div class="vw-ttl"><h2 id="vwTitle">Preview</h2><small id="vwSub"></small></div><span class="spacer"></span><button type="button" class="ib" id="vwMode" title="Switch to mobile view (vertical)" aria-label="Switch between mobile and desktop view"><svg class="i" viewBox="0 0 24 24"><rect x="6" y="7.5" width="12" height="9" rx="2"/><path d="M4 12a8 8 0 0 1 2.4-5.7M20 12a8 8 0 0 1-2.4 5.7M6.4 3.8v2.5h2.5M17.6 20.2v-2.5h-2.5"/></svg></button><button type="button" class="ib" id="vwMin" title="Minimize" aria-label="Minimize"><svg class="i" viewBox="0 0 24 24"><path d="M6 18h12"/></svg></button><button type="button" class="ib" id="vwMax" title="Maximize" aria-label="Maximize"><svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg></button><button type="button" class="ib" id="vwX" title="Close">&#10005;</button></div>
+  <div class="vw-head" id="vwHead"><span class="vw-tile" id="vwTile"></span><div class="vw-ttl"><h2 id="vwTitle">Preview</h2><small id="vwSub"></small></div><span class="spacer"></span><button type="button" class="ib" id="vwPip" hidden title="Pop out (picture in picture)" aria-label="Pop out this video or audio in a small window"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><rect x="12" y="11.5" width="7" height="5" rx="1.2"/></svg></button><button type="button" class="ib" id="vwMode" title="Switch to mobile view (vertical)" aria-label="Switch between mobile and desktop view"><svg class="i" viewBox="0 0 24 24"><rect x="6" y="7.5" width="12" height="9" rx="2"/><path d="M4 12a8 8 0 0 1 2.4-5.7M20 12a8 8 0 0 1-2.4 5.7M6.4 3.8v2.5h2.5M17.6 20.2v-2.5h-2.5"/></svg></button><button type="button" class="ib" id="vwMin" title="Minimize" aria-label="Minimize"><svg class="i" viewBox="0 0 24 24"><path d="M6 12h12"/></svg></button><button type="button" class="ib" id="vwMax" title="Maximize" aria-label="Maximize"><svg class="i" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1.5"/></svg></button><button type="button" class="ib" id="vwX" title="Close">&#10005;</button></div>
   <div class="vw-body" id="vwBody"></div>
   <div class="vw-find" id="vwFind" hidden><input id="vwFindIn" type="text" placeholder="Find in text" autocomplete="off" spellcheck="false"><span id="vwFindCnt" class="vw-cnt"></span><button type="button" class="btn sm" id="vwFindCase" title="Match case">Aa</button><button type="button" class="btn sm" id="vwFindPrev" title="Previous (Shift+Enter)">&#8593;</button><button type="button" class="btn sm" id="vwFindNext" title="Next (Enter)">&#8595;</button><button type="button" class="ib" id="vwFindX" title="Close find (Esc)">&#10005;</button></div>
   <div class="vw-editwrap" id="vwEditWrap" hidden><div class="vw-hl" id="vwHl" aria-hidden="true"></div><textarea id="vwEdit" class="vw-edit" spellcheck="false"></textarea></div>
@@ -123,6 +96,7 @@
 <input id="jsonFile" type="file" accept=".json,application/json" hidden>
 <input id="csvFile" type="file" accept=".csv,text/csv" hidden>
 <script src="lib.js"></script>
+<script src="pip.js"></script>
 <script src="qrcode.js"></script>
 <script src="app.js"></script>
 <script src="share.js"></script>

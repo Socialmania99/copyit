@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Copyit Docs &amp; Guide</title>
+<meta name="description" content="Complete guide to Copyit, the private clipboard history extension for Chrome.">
+<link rel="icon" href="favicon-32.png">
+<style>
+:root{--bg:#f6f7fc;--card:#fff;--ink:#14142b;--muted:#5d6076;--line:#e4e6f0;--accent:#3b6ef5}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1020;--card:#181a30;--ink:#f1f2fa;--muted:#a3a7c2;--line:#2a2d4a;--accent:#7f9cff}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,"Segoe UI",system-ui,-apple-system,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:36px 20px 72px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:32px}
+header{grid-column:1/-1;display:flex;align-items:center;gap:14px}
+header img{width:48px;height:48px;border-radius:12px}
+h1{font-size:28px;margin:0;line-height:1.2}header p{margin:2px 0 0;color:var(--muted);font-size:14px}
+nav{position:sticky;top:20px;align-self:start;display:flex;flex-direction:column;gap:2px;font-size:14px}
+nav a{padding:6px 10px;border-radius:8px;color:var(--muted);text-decoration:none}nav a:hover{background:var(--card);color:var(--accent)}
+main{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 28px 20px}
+section{padding-top:12px;scroll-margin-top:16px}
+h2{font-size:20px;margin:22px 0 8px}h3{font-size:16px;margin:16px 0 4px}
+p,ul,ol{margin:0 0 12px}li{margin-bottom:5px}a{color:var(--accent)}
+kbd{background:var(--bg);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;font:12.5px ui-monospace,Consolas,monospace}
+code{background:var(--bg);border-radius:6px;padding:1px 6px;font-size:.92em}
+table{border-collapse:collapse;width:100%;font-size:14.5px;margin-bottom:12px}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}
+footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px}
+@media(max-width:760px){.wrap{grid-template-columns:1fr}nav{position:static;flex-direction:row;flex-wrap:wrap}main{padding:4px 16px 16px}}
+</style></head><body><div class="wrap">
+<header><img src="logo.png" alt=""><div><h1>Copyit Docs &amp; Guide</h1><p>Version 1.1.0 &middot; <a href="./">Home</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://github.com/Socialmania99/Copyit">GitHub</a></p></div></header>
+<nav aria-label="Contents"><a href="#start">Getting started</a><a href="#save">Saving clips</a><a href="#list">The popup list</a><a href="#folders">Folders and tags</a><a href="#preview">Preview and edit window</a><a href="#tools">Tools (bottom left of the popup)</a><a href="#rightclick">Right-click on pictures and videos</a><a href="#dash">Dashboard</a><a href="#settings">Settings</a><a href="#help">Help menu (chat icon)</a><a href="#privacy">Privacy and permissions</a><a href="#trouble">Troubleshooting</a><a href="#keys">Shortcuts</a></nav>
+<main><section id="start"><h2>Getting started</h2><p>Copyit is a private clipboard history for Chrome. It keeps text, links, code, rich text, images and videos you save, on your device only.</p>
+<ol><li>Install Copyit from the Chrome Web Store, or load the <code>extension</code> folder from GitHub with <b>chrome://extensions</b> &rarr; Developer mode &rarr; Load unpacked.</li>
+<li>Pin it: click the puzzle icon in Chrome and pin Copyit.</li>
+<li>Click the Copyit icon (or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd>, <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> on Mac).</li></ol></section><section id="save"><h2>Saving clips</h2><ul><li><b>Save clipboard</b> button: reads what you last copied and saves it.</li>
+<li><kbd>Ctrl</kbd>+<kbd>V</kbd> inside the Copyit popup saves what you paste.</li>
+<li><b>+</b> button: type or paste text yourself.</li>
+<li>Right-click anything on a web page: <b>Save to Copyit</b>. Right-click an image or video for the media options.</li>
+<li>Drop files onto the dashboard: images, videos, text, .json, .csv.</li></ul>
+<p>Copyit never watches your clipboard in the background. It reads it only when you ask.</p></section><section id="list"><h2>The popup list</h2><p>Every clip is one compact row. The icons on each row, left to right:</p>
+<ul><li><b>QR</b>: scan to open the clip on your phone.</li><li><b>Star</b> and <b>Pin</b>: keep important clips on top.</li>
+<li><b>Eye (Preview)</b>: opens the preview window in the dashboard.</li><li><b>Pencil</b>: edit text or tags.</li>
+<li><b>Three dots</b>: copy as plain text, with formatting, Markdown and more.</li><li><b>Bin</b>: delete (click twice to confirm).</li>
+<li><b>Copy</b> button: copies the clip.</li></ul>
+<p>Press <kbd>Alt</kbd>+<kbd>1</kbd> to <kbd>Alt</kbd>+<kbd>9</kbd> to copy one of your first nine clips. Hover the <b>i</b> icon in the popup for this tip.</p>
+<h3>Filters</h3>
+<p>Use All, Pinned and Starred, the search box (supports <code>#tags</code> and types) and the type chips. Scroll the chips with your mouse wheel, or click the arrow beside them to show every type and click again to fold them back.</p></section><section id="folders"><h2>Folders and tags</h2><p>Press <b>New folder</b> to create a folder. Move a clip with the three dots menu. Add tags in Edit, separated by commas, and click a tag to filter.</p></section><section id="preview"><h2>Preview and edit window</h2><p>Press the eye icon on a clip. The dashboard opens and shows the clip in a window.</p>
+<ul><li><b>Text, links, code, rich text</b>: press <b>Edit</b>, change it, then <b>Save changes</b> or <b>Discard</b>. <b>Find</b> (<kbd>Ctrl</kbd>+<kbd>F</kbd>) highlights words while editing.</li>
+<li><b>Pictures, videos, vectors, media links, websites</b>: shown inside the window. Buttons: Open in new tab, Download, Copy.</li>
+<li><b>Resize</b> by dragging the corner. <b>Move</b> by holding the right mouse button on the window and dragging. Use the rotate button to switch between mobile (tall) and desktop (wide). Use <b>Minimize</b> and <b>Maximize</b> next to it.</li>
+<li>Website links need <b>Allow website previews</b> once. Sites that refuse to be framed or need a sign-in (for example Google Docs) still need Open in new tab.</li></ul></section><section id="tools"><h2>Tools (bottom left of the popup)</h2><p>Press <b>Tools</b>. Each tool has a toggle and is <b>off by default</b>. The first time you switch one on, Chrome asks once to let Copyit work on websites. Switch all off and the permission is returned.</p>
+<h3>Click to copy</h3><p>Hover text on any page and click once to copy it. Choose <b>Paragraph</b>, <b>Sentence</b> or <b>Selection</b>. Optionally save each copy to your list. Links, buttons and text fields are left alone. Hold <kbd>Alt</kbd> to click normally.</p>
+<h3>Copy text from images &amp; videos (OCR)</h3><p>Hover a picture or a paused video, press <b>Copy text</b>. The reader is built into Copyit and works offline. Nothing is uploaded. Emoji and decorative symbols are not recognised.</p>
+<h3>Pop-out player (picture in picture)</h3><p>This works only for video and audio you saved in Copyit. Open the saved clip in the preview window and press the pop-out button at the top. A small player floats above your other windows, with play/pause, seek, mute, <b>Minimize</b>, <b>Maximize</b> and <b>Back to Copyit</b>. Copyit does not add any button to the videos on websites you visit. Needs Chrome 116 or newer for the full window.</p></section><section id="rightclick"><h2>Right-click on pictures and videos</h2><ul><li><b>Copy image directly (Copyit)</b>: straight to your clipboard, and the picture is also saved as an image clip in your Copyit list. If a website blocks reading the picture, Copyit copies what is visible on screen instead and tells you.</li>
+<li><b>Copy video frame as image</b>: the frame you are looking at. It is also saved as an image clip in your list.</li>
+<li><b>Preview in Copyit</b>: opens a viewer window.</li>
+<li><b>Save image address to Copyit</b>: saves the link.</li>
+<li><b>Copy text from this image or video</b>: OCR, works even with the tool switched off.</li></ul>
+<p>Inside Copyit, right-click a saved picture or video for Preview, Copy image and the other copy options.</p></section><section id="dash"><h2>Dashboard</h2><p>Press the arrow icon at the top of the popup. Copyit opens one dashboard tab only; if it is already open you are taken to it. The dashboard has the same clips in a roomy layout, plus import and export.</p></section><section id="settings"><h2>Settings</h2><p>Settings is its own full page. Press the sliders icon at the bottom right of the popup, or the gear on the dashboard. A sidebar lists the categories. The <b>Back to Dashboard</b> button at the top returns you. On a small window the sidebar folds into a menu button.</p><ul><li><b>General</b>: light, dark or auto, colour theme, version, support email, website, GitHub, privacy policy and Buy me a coffee.</li><li><b>Page tools</b>: switches for Click to copy and Copy text from images &amp; videos.</li><li><b>Privacy &amp; security</b>: blur sensitive clips, preview links on hover, keep sensitive clips out of backups.</li><li><b>Storage &amp; clean-up</b>: delete old clips, keep at most, and how much space Copyit uses.</li><li><b>Import &amp; export</b>: JSON, CSV, Text and Markdown backups, and import.</li><li><b>Danger zone</b>: clear all clips (you can undo for a few seconds).</li><li><b>Support</b> (sidebar): Contact us and Docs &amp; Guide open the Copyit website.</li></ul></section><section id="help"><h2>Help menu (chat icon)</h2><ul><li><b>Copy support email</b>: copies socialmania99@gmail.com.</li><li><b>Buy the author a coffee</b>: optional support, never required.</li>
+<li><b>Feedback form</b>: opens a new issue on GitHub.</li><li><b>View Docs &amp; Guide</b>: this page.</li></ul></section><section id="privacy"><h2>Privacy and permissions</h2><p>No account, no ads, no tracking. Clips stay in Chrome storage on your device. Full details: <a href="privacy.html">Privacy policy</a>.</p>
+<table><tr><th>Permission</th><th>Why</th></tr>
+<tr><td>storage, unlimitedStorage</td><td>Save your clips locally. Images can be large.</td></tr>
+<tr><td>clipboardRead / clipboardWrite</td><td>Read only when you press Save clipboard. Write only when you copy.</td></tr>
+<tr><td>contextMenus</td><td>Right-click items.</td></tr>
+<tr><td>activeTab, scripting</td><td>Run the right-click actions on the page you chose.</td></tr>
+<tr><td>offscreen</td><td>Runs the offline text reader.</td></tr>
+<tr><td>declarativeNetRequestWithHostAccess</td><td>Lets Copyit's own preview window show websites that block framing, after you press Allow website previews.</td></tr>
+<tr><td>All sites (optional)</td><td>Asked only when you switch a tool on. Returned when all are off.</td></tr></table></section><section id="trouble"><h2>Troubleshooting</h2><ul><li><b>Page tools do nothing:</b> reload the page after switching a tool on, and check Chrome did not block website access (chrome://extensions &rarr; Copyit &rarr; Details).</li>
+<li><b>A website will not show in Preview:</b> use Open in new tab.</li>
+<li><b>Copy image says it could not copy:</b> click the page once, then try again. Chrome blocks clipboard writes when the page is not focused.</li>
+<li><b>YouTube preview fails:</b> check your internet. The player is a small page on socialmania99.com.</li>
+<li><b>Lost clips:</b> they live in this Chrome profile only. Export a JSON backup regularly.</li></ul>
+<p>Still stuck? Email <a href="mailto:socialmania99@gmail.com">socialmania99@gmail.com</a> or <a href="https://github.com/Socialmania99/Copyit/issues/new">open an issue</a>.</p></section><section id="keys"><h2>Shortcuts</h2><table><tr><th>Keys</th><th>Action</th></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd></td><td>Open Copyit</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>V</kbd> (in the popup)</td><td>Save what you paste</td></tr>
+<tr><td><kbd>Alt</kbd>+<kbd>1</kbd>&ndash;<kbd>9</kbd></td><td>Copy one of your first nine clips</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd> (editing)</td><td>Find in the clip</td></tr>
+<tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Save in Add text, Edit</td></tr>
+<tr><td><kbd>Alt</kbd> + click (Click to copy on)</td><td>Click a page normally</td></tr></table>
+<p>Change the open shortcut at chrome://extensions/shortcuts.</p></section></main>
+<footer>Copyit &middot; Private clipboard history for Chrome &middot; <a href="mailto:socialmania99@gmail.com">socialmania99@gmail.com</a></footer>
+</div></body></html>

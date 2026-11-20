@@ -11,7 +11,6 @@ chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({ id: 'copy-image', title: 'Copy image directly (Copyit)', contexts: ['image'] });
     chrome.contextMenus.create({ id: 'copy-frame', title: 'Copy video frame as image (Copyit)', contexts: ['video'] });
     chrome.contextMenus.create({ id: 'preview-media', title: 'Preview in Copyit', contexts: ['image', 'video'] });
-    chrome.contextMenus.create({ id: 'pip-media', title: 'Picture in picture (Copyit)', contexts: ['video', 'audio'] });
     chrome.contextMenus.create({ id: 'ocr-media', title: 'Copy text from this image or video', contexts: ['image', 'video'] });
   });
   syncScripts();
@@ -21,7 +20,6 @@ chrome.runtime.onStartup.addListener(syncScripts);
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === 'ocr-media') { ocrFromMenu(info, tab); return; }
   if (info.menuItemId === 'copy-image' || info.menuItemId === 'copy-frame') { mediaFromMenu(info, tab, info.menuItemId === 'copy-frame' ? 'frame' : 'image'); return; }
-  if (info.menuItemId === 'pip-media') { if (tab && tab.id != null) pageMsg(tab, { type: 'PIP_OPEN', srcUrl: info.srcUrl || '' }); return; }
   if (info.menuItemId === 'preview-media') { previewFromMenu(info, tab); return; }
   const text = { 'save-selected-text': info.selectionText, 'save-link': info.linkUrl, 'save-image-url': info.srcUrl, 'save-page-url': info.pageUrl || tab?.url }[info.menuItemId];
   if (!text) return;
@@ -105,7 +103,7 @@ async function syncScripts() {
   try {
     const data = await chrome.storage.local.get(SETTINGS);
     const s = { ...DEFAULT_SETTINGS, ...(data[SETTINGS] || {}) };
-    const want = (s.clickCopy || s.imgText || s.pip) && await chrome.permissions.contains(ALL);
+    const want = (s.clickCopy || s.imgText) && await chrome.permissions.contains(ALL);
     const have = (await chrome.scripting.getRegisteredContentScripts({ ids: [CS_ID] })).length > 0;
     if (want && !have) {
       await chrome.scripting.registerContentScripts([{ id: CS_ID, matches: ['http://*/*', 'https://*/*'], js: ['content.js'], runAt: 'document_idle', allFrames: false, persistAcrossSessions: true }]);
@@ -175,5 +173,6 @@ async function fetchMedia(url) {                 // used when the page itself ma
   return 'data:' + (r.headers.get('content-type') || 'image/png').split(';')[0] + ';base64,' + btoa(bin);
 }
 chrome.runtime.onMessage.addListener((m, _s, send) => {
+  if (m && m.type === 'SHOT') { const wid = _s.tab && _s.tab.windowId; chrome.tabs.captureVisibleTab(wid, { format: 'png' }).then(dataUrl => send({ ok: true, dataUrl })).catch(e => send({ ok: false, error: String(e && e.message || e) })); return true; }
   if (m && m.type === 'FETCH_MEDIA') { fetchMedia(m.url).then(dataUrl => send({ ok: true, dataUrl })).catch(e => send({ ok: false, error: String(e && e.message || e) })); return true; }
 });

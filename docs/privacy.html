@@ -33,7 +33,7 @@
     <div class="logo" aria-hidden="true"><svg viewBox="0 0 40 40"><rect x="11" y="9" width="18" height="22" rx="4" fill="#fff"/><rect x="15" y="7" width="10" height="5" rx="2" fill="#fff"/><path d="M15 18h10M15 22h10M15 26h6" stroke="#7c3aed" stroke-width="2" stroke-linecap="round"/></svg></div>
     <div>
       <h1>Copyit Privacy Policy</h1>
-      <p class="date">Last updated: November 15, 2026</p>
+      <p class="date">Last updated: November 19, 2026</p>
     </div>
   </header>
 
@@ -60,6 +60,9 @@
     <p>"Click to copy" and "Copy text from images &amp; videos" are off until you switch them on. When you do, Chrome asks you once to let Copyit work on websites; turning both switches off gives that permission back. With a tool on, Copyit looks at a page only when you hover or click, to find the text you chose. Text you copy goes to your clipboard and, if you leave the option on, into your Copyit list on this device.</p>
     <p>To read text in an image or video, Copyit takes a picture of the visible part of the tab and reads it with an OCR engine that is bundled inside the extension. The picture and the text are processed on your device, are not saved unless you copy the text into your list, and are never uploaded.</p>
 
+    <h2>5c. Preview window, copy image, pop-out player</h2>
+    <p>When you open a web link in the Preview window, the page is loaded in a frame inside Copyit, straight from that website, like opening it in a tab. Only if you press "Allow website previews", Copyit removes that website's "do not show in a frame" headers for Copyit's own preview frame and for no other page. Nothing is sent to the developer.</p>
+    <p>"Copy image directly" and "Copy video frame" read the picture you right-clicked and put it on your clipboard. If the website does not allow that, Copyit fetches the picture from its own address, or copies what is visible on screen. Copyit also saves that picture as an image clip in your Copyit list, on your device only, so you can find it later. You can delete it like any other clip. The picture is never uploaded. The pop-out player (picture in picture) works only inside Copyit's own preview window, for video or audio you saved in Copyit. It moves that player into a small window on your device and sends no data anywhere. Copyit does not add a pop-out button to videos or audio on websites.</p>
     <h2>6. Exports and backups</h2>
     <p>Files you export (JSON, CSV, TXT, Markdown) are saved to your computer by you. Copyit does not send them anywhere.</p>
 
@@ -68,8 +71,8 @@
       <li><code>storage</code>, <code>unlimitedStorage</code>: save your clips locally.</li>
       <li><code>clipboardRead</code>, <code>clipboardWrite</code>: save from and copy to your clipboard when you ask.</li>
       <li><code>contextMenus</code>: the right-click save options.</li>
-      <li><code>downloads</code>: save files you export or download.</li>
-      <li><code>activeTab</code>, <code>scripting</code>: used by the right-click "Copy text from this image or video" item on the page you chose.</li>
+      <li><code>activeTab</code>, <code>scripting</code>: used by the right-click items (copy text from an image or video, copy image, copy video frame) on the page you chose.</li>
+      <li><code>declarativeNetRequestWithHostAccess</code>: lets Copyit's own preview frame show websites that block framing, only after you press Allow website previews.</li>
       <li><code>offscreen</code>: runs the bundled text reader in a hidden extension page.</li>
       <li>Optional access to all sites: requested only when you switch on a page tool. It lets Copyit show its copy button and read the text you click. Copyit does not read your browsing history.</li>
     </ul>
