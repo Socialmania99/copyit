@@ -1,32 +1,38 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Copyit Docs &amp; Guide</title>
-<meta name="description" content="Complete guide to Copyit, the private clipboard history extension for Chrome.">
-<link rel="icon" href="favicon-32.png">
-<style>
-:root{--bg:#f6f7fc;--card:#fff;--ink:#14142b;--muted:#5d6076;--line:#e4e6f0;--accent:#3b6ef5}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1020;--card:#181a30;--ink:#f1f2fa;--muted:#a3a7c2;--line:#2a2d4a;--accent:#7f9cff}}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 Inter,"Segoe UI",system-ui,-apple-system,sans-serif}
-.wrap{max-width:1000px;margin:0 auto;padding:36px 20px 72px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:32px}
-header{grid-column:1/-1;display:flex;align-items:center;gap:14px}
-header img{width:48px;height:48px;border-radius:12px}
-h1{font-size:28px;margin:0;line-height:1.2}header p{margin:2px 0 0;color:var(--muted);font-size:14px}
-nav{position:sticky;top:20px;align-self:start;display:flex;flex-direction:column;gap:2px;font-size:14px}
-nav a{padding:6px 10px;border-radius:8px;color:var(--muted);text-decoration:none}nav a:hover{background:var(--card);color:var(--accent)}
-main{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:8px 28px 20px}
-section{padding-top:12px;scroll-margin-top:16px}
-h2{font-size:20px;margin:22px 0 8px}h3{font-size:16px;margin:16px 0 4px}
-p,ul,ol{margin:0 0 12px}li{margin-bottom:5px}a{color:var(--accent)}
-kbd{background:var(--bg);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;font:12.5px ui-monospace,Consolas,monospace}
-code{background:var(--bg);border-radius:6px;padding:1px 6px;font-size:.92em}
-table{border-collapse:collapse;width:100%;font-size:14.5px;margin-bottom:12px}th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600}
-footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px}
-@media(max-width:760px){.wrap{grid-template-columns:1fr}nav{position:static;flex-direction:row;flex-wrap:wrap}main{padding:4px 16px 16px}}
-</style></head><body><div class="wrap">
-<header><img src="logo.png" alt=""><div><h1>Copyit Docs &amp; Guide</h1><p>Version 1.1.0 &middot; <a href="./">Home</a> &middot; <a href="privacy.html">Privacy</a> &middot; <a href="https://github.com/Socialmania99/Copyit">GitHub</a></p></div></header>
-<nav aria-label="Contents"><a href="#start">Getting started</a><a href="#save">Saving clips</a><a href="#list">The popup list</a><a href="#folders">Folders and tags</a><a href="#preview">Preview and edit window</a><a href="#tools">Tools (bottom left of the popup)</a><a href="#rightclick">Right-click on pictures and videos</a><a href="#dash">Dashboard</a><a href="#settings">Settings</a><a href="#help">Help menu (chat icon)</a><a href="#privacy">Privacy and permissions</a><a href="#trouble">Troubleshooting</a><a href="#keys">Shortcuts</a></nav>
-<main><section id="start"><h2>Getting started</h2><p>Copyit is a private clipboard history for Chrome. It keeps text, links, code, rich text, images and videos you save, on your device only.</p>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Copyit Docs & Guide</title>
+<meta name="description" content="Step-by-step guide to Copyit: saving clips, folders, preview, tools, Settings, shortcuts and troubleshooting.">
+<meta name="copyit-build" content="2026-11-21-v1.2.0">
+<meta name="theme-color" content="#f6f7fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c0e13" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="canonical" href="https://socialmania99.com/copyit/docs.html">
+<meta property="og:title" content="Copyit Docs & Guide">
+<meta property="og:description" content="Step-by-step guide to Copyit: saving clips, folders, preview, tools, Settings, shortcuts and troubleshooting.">
+<meta property="og:url" content="https://socialmania99.com/copyit/docs.html">
+<meta property="og:image" content="https://socialmania99.com/copyit/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="site.css">
+<script>try{var t=localStorage.getItem('copyitSiteTheme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body><header class="top"><div class="wrap">
+<a class="brand" href="./"><img src="logo.png" alt="" width="32" height="32">Copyit</a>
+<nav class="nav" aria-label="Main">
+<a href="./">Home</a>
+<a href="docs.html" class="on keep">Docs &amp; Guide</a><a href="privacy.html" class="keep">Privacy</a>
+<button class="tbtn" id="themeBtn" type="button" aria-label="Switch light or dark"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5"/></svg></button>
+<a class="btn pri sm keep" href="https://github.com/Socialmania99/Copyit/releases/latest">Install free</a>
+</nav></div></header>
+
+<main class="wrap page"><h1>Docs &amp; Guide</h1><p class="meta">Copyit 1.2.0 &middot; everything you need, one step at a time.</p>
+<div class="doc"><aside class="toc" aria-label="Contents"><b>On this page</b><div><a href="#start">Getting started</a><a href="#save">Saving clips</a><a href="#list">The popup list</a><a href="#folders">Folders and tags</a><a href="#preview">Preview and edit window</a><a href="#tools">Tools (bottom left of the popup)</a><a href="#rightclick">Right-click on pictures and videos</a><a href="#dash">Dashboard</a><a href="#settings">Settings</a><a href="#help">Help menu (chat icon)</a><a href="#privacy">Privacy and permissions</a><a href="#trouble">Troubleshooting</a><a href="#keys">Shortcuts</a></div></aside><div class="prose"><section id="start"><h2>Getting started</h2><p>Copyit is a private clipboard history for Chrome. It keeps text, links, code, rich text, images and videos you save, on your device only.</p>
 <ol><li>Install Copyit from the Chrome Web Store, or load the <code>extension</code> folder from GitHub with <b>chrome://extensions</b> &rarr; Developer mode &rarr; Load unpacked.</li>
 <li>Pin it: click the puzzle icon in Chrome and pin Copyit.</li>
 <li>Click the Copyit icon (or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd>, <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> on Mac).</li></ol></section><section id="save"><h2>Saving clips</h2><ul><li><b>Save clipboard</b> button: reads what you last copied and saves it.</li>
@@ -53,7 +59,7 @@ footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px}
 <li><b>Preview in Copyit</b>: opens a viewer window.</li>
 <li><b>Save image address to Copyit</b>: saves the link.</li>
 <li><b>Copy text from this image or video</b>: OCR, works even with the tool switched off.</li></ul>
-<p>Inside Copyit, right-click a saved picture or video for Preview, Copy image and the other copy options.</p></section><section id="dash"><h2>Dashboard</h2><p>Press the arrow icon at the top of the popup. Copyit opens one dashboard tab only; if it is already open you are taken to it. The dashboard has the same clips in a roomy layout, plus import and export.</p></section><section id="settings"><h2>Settings</h2><p>Settings is its own full page. Press the sliders icon at the bottom right of the popup, or the gear on the dashboard. A sidebar lists the categories. The <b>Back to Dashboard</b> button at the top returns you. On a small window the sidebar folds into a menu button.</p><ul><li><b>General</b>: light, dark or auto, colour theme, version, support email, website, GitHub, privacy policy and Buy me a coffee.</li><li><b>Page tools</b>: switches for Click to copy and Copy text from images &amp; videos.</li><li><b>Privacy &amp; security</b>: blur sensitive clips, preview links on hover, keep sensitive clips out of backups.</li><li><b>Storage &amp; clean-up</b>: delete old clips, keep at most, and how much space Copyit uses.</li><li><b>Import &amp; export</b>: JSON, CSV, Text and Markdown backups, and import.</li><li><b>Danger zone</b>: clear all clips (you can undo for a few seconds).</li><li><b>Support</b> (sidebar): Contact us and Docs &amp; Guide open the Copyit website.</li></ul></section><section id="help"><h2>Help menu (chat icon)</h2><ul><li><b>Copy support email</b>: copies socialmania99@gmail.com.</li><li><b>Buy the author a coffee</b>: optional support, never required.</li>
+<p>Inside Copyit, right-click a saved picture or video for Preview, Copy image and the other copy options.</p></section><section id="dash"><h2>Dashboard</h2><p>Press the arrow icon at the top of the popup. Copyit opens one dashboard tab only; if it is already open you are taken to it. The dashboard has the same clips in a roomy layout, plus import and export.</p></section><section id="settings"><h2>Settings</h2><p>Settings is its own full page. Press the sliders icon at the bottom right of the popup, or the gear on the dashboard. A sidebar lists the categories. The <b>Back to Dashboard</b> button at the top returns you. On a small window the sidebar folds into a menu button.</p><ul><li><b>General</b>: light, dark or auto, and a custom colour picker (wheel, brightness, swatches, hex) that recolours every Copyit page, version, support email, website, GitHub, privacy policy and Buy me a coffee.</li><li><b>Page tools</b>: switches for Click to copy and Copy text from images &amp; videos.</li><li><b>Privacy &amp; security</b>: blur sensitive clips, preview links on hover, keep sensitive clips out of backups.</li><li><b>Storage &amp; clean-up</b>: delete old clips, keep at most, and how much space Copyit uses.</li><li><b>Import &amp; export</b>: JSON, CSV, Text and Markdown backups, and import.</li><li><b>Danger zone</b>: clear all clips (you can undo for a few seconds).</li><li><b>Support</b> (sidebar): Contact us and Docs &amp; Guide open the Copyit website.</li></ul></section><section id="help"><h2>Help menu (chat icon)</h2><ul><li><b>Copy support email</b>: copies socialmania99@gmail.com.</li><li><b>Buy the author a coffee</b>: optional support, never required.</li>
 <li><b>Feedback form</b>: opens a new issue on GitHub.</li><li><b>View Docs &amp; Guide</b>: this page.</li></ul></section><section id="privacy"><h2>Privacy and permissions</h2><p>No account, no ads, no tracking. Clips stay in Chrome storage on your device. Full details: <a href="privacy.html">Privacy policy</a>.</p>
 <table><tr><th>Permission</th><th>Why</th></tr>
 <tr><td>storage, unlimitedStorage</td><td>Save your clips locally. Images can be large.</td></tr>
@@ -74,6 +80,15 @@ footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px}
 <tr><td><kbd>Ctrl</kbd>+<kbd>F</kbd> (editing)</td><td>Find in the clip</td></tr>
 <tr><td><kbd>Ctrl</kbd>+<kbd>Enter</kbd></td><td>Save in Add text, Edit</td></tr>
 <tr><td><kbd>Alt</kbd> + click (Click to copy on)</td><td>Click a page normally</td></tr></table>
-<p>Change the open shortcut at chrome://extensions/shortcuts.</p></section></main>
-<footer>Copyit &middot; Private clipboard history for Chrome &middot; <a href="mailto:socialmania99@gmail.com">socialmania99@gmail.com</a></footer>
-</div></body></html>
+<p>Change the open shortcut at chrome://extensions/shortcuts.</p></section></div></div></main>
+<footer><div class="wrap"><div><b style="color:var(--ink)">Copyit</b> &middot; Private clipboard history for Chrome &middot; v1.2.0</div>
+<nav><a href="./">Home</a><a href="docs.html">Docs &amp; Guide</a><a href="privacy.html">Privacy Policy</a><a href="https://github.com/Socialmania99/Copyit">GitHub</a><a href="mailto:socialmania99@gmail.com">Contact</a></nav></div></footer>
+<script>
+(function(){var r=document.documentElement,b=document.getElementById('themeBtn');
+function cur(){return r.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}
+if(b)b.addEventListener('click',function(){var n=cur()==='dark'?'light':'dark';r.dataset.theme=n;try{localStorage.setItem('copyitSiteTheme',n)}catch(e){}});
+document.querySelectorAll('[data-copy]').forEach(function(x){x.addEventListener('click',function(){var v=x.dataset.copy,l=x.querySelector('span');function ok(){if(l){var o=l.textContent;l.textContent='Copied';setTimeout(function(){l.textContent=o},1400)}}
+if(navigator.clipboard)navigator.clipboard.writeText(v).then(ok,ok);else ok()})});
+})();
+</script>
+</body></html>

@@ -1,4 +1,4 @@
-/* Copyit page helper (v1.1.0).
+/* Copyit page helper (v1.2.0).
    Runs only after you switch on "Click to copy" or "Copy text from images & videos", or when you use the
    right-click "Copy text from image / video" item. It never sends page text anywhere: copies go to your
    clipboard and, if you allow it, into your Copyit list on this device. */

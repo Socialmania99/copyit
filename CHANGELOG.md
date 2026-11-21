@@ -1,8 +1,8 @@
 # Changelog
-## 1.1.0
+## 1.2.0
 - **Minimal popup.** Clips are a compact list with every action on the row (QR, star, pin, preview, edit, more, delete, copy). Preview opens in the dashboard. The tip text is now an info icon. Type chips scroll with the mouse wheel and have an expand/fold arrow. Page tools moved to a **Tools** toggle menu at the bottom left. Bottom right: a help menu (copy support email, buy the author a coffee, feedback form, Docs & Guide) and a settings icon. The theme switcher moved into Settings, which also has Contact us. The website icon was removed.
 - Fixed: the floating Add button no longer covers the Tools menu.
-- Website: hero demo now shows the new popup (Tools menu with three toggles, help menu, settings, info tip, expandable type chips, row actions) and the feature list has the new 1.1 features.
+- Website: hero demo now shows the new popup (Tools menu with three toggles, help menu, settings, info tip, expandable type chips, row actions) and the feature list has the new 1.2 features.
 - New **Docs & Guide** page (docs/docs.html) at https://socialmania99.com/copyit/docs.html.
 - **Click to copy** (new, off by default). Hover any text and click once to copy it. Choose Paragraph, Sentence or Selection. Optional: also save each copy to your Copyit list. Links, buttons and text fields are left alone. Hold Alt to click normally. Switch it on in the popup or in Settings.
 - **Copy text from images and videos** (new, off by default). Hover a picture or a paused video and press Copy text. A bundled offline reader finds the text, including numbers and symbols such as € © ™, and copies it. Right-click an image or video and pick "Copy text from this image or video" (works with the switch off).
@@ -10,6 +10,8 @@
 - **Right-click on pictures and videos.** On any website: Copy image directly (straight to the clipboard), Copy video frame as image, and Preview in Copyit. "Save image address to Copyit" stays as it was. Inside Copyit, right-click a saved picture or video to get Preview, Copy image and the other copy options.
 - **Copy image directly and Copy video frame now also save the picture as a clip in your Copyit list** (image clip, same picture is not saved twice). The message says "saved to Copyit".
 - **Settings is now its own full page** (opens from the popup and dashboard, no more dialog). Sidebar categories: General, Page tools, Privacy & security, Storage & clean-up, Import & export, Danger zone. Back to Dashboard button, desktop layout, responsive on small windows. The Extensions page "Options" link opens it too.
+- **Custom colour picker** in Settings > General > Custom colour: colour wheel, brightness slider, 10 quick swatches and a hex box. The colour changes buttons, highlights and accents in the popup, dashboard, settings and preview pages at once (live, also in other open Copyit tabs). Reset brings back the default blue. The old Multicolor and Black & White theme buttons were removed; Appearance now only has Light, Dark and Auto, with the colour picker right below it.
+- **One-tap light/dark button** in the popup header (next to Open dashboard) and in the dashboard (next to the heart). Sun while dark, moon while light, plain black or white. Settings page: removed the top-right Back to Dashboard button (the sidebar one stays).
 - Audio links (mp3, wav, m4a, ogg, flac, opus) get an "Audio link" label and a player in the preview.
 - Preview window buttons: Minimize is now a dash, Maximize a square, and the restore icons show two overlapping squares, so the three states are easy to tell apart.
 - **Copy image directly now works on any website.** If a site blocks reading the picture (other server, no permission), Copyit copies exactly what is on screen instead, and says "from the screen". Same for Copy video frame on protected videos. Clearer message when Chrome blocks the clipboard.

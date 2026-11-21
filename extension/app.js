@@ -5,18 +5,13 @@ const isSet = document.body.classList.contains('settingspage');
 const POP = document.body.classList.contains('popup');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// two themes: "color" (flat multicolor, default) and "mono" (black & white with gradient)
-const THEMES = [
-  { id: 'color', name: 'Multicolor',    c: ['#3b6ef5', '#3b6ef5'], t: '#fff' },
-  { id: 'mono',  name: 'Black & White', c: ['#ffffff', '#000000'], t: '#000' }
-];
-const setTheme = id => { if (id !== 'mono') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = id; };
-const curTheme = () => document.documentElement.dataset.theme || 'color';
-try { setTheme(localStorage.getItem('vaultTheme')); } catch { }
+const setTheme = () => { if (!window.CopyitTheme?.apply(window.CopyitTheme.get())) delete document.documentElement.dataset.theme; };   // colour comes from the custom colour picker only
+setTheme();
 // appearance: light | dark | auto (follow the system)
-const setMode = m => { if (m === 'light' || m === 'dark') document.documentElement.dataset.mode = m; else delete document.documentElement.dataset.mode; };
+const setMode = m => { if (m === 'light' || m === 'dark') document.documentElement.dataset.mode = m; else delete document.documentElement.dataset.mode; window.dispatchEvent(new Event('copyit-mode')); };
 const curMode = () => document.documentElement.dataset.mode || 'auto';
 try { setMode(localStorage.getItem('vaultMode')); } catch { }
+addEventListener('storage', e => { if (e.key === 'vaultMode') setMode(e.newValue); });
 try { if (isDash) { if (sessionStorage.getItem('vaultSplash')) document.getElementById('splash')?.remove(); else sessionStorage.setItem('vaultSplash', '1'); } } catch { }
 
 let entries = [];
@@ -1066,34 +1061,31 @@ const MODES = [{ id: 'light', name: 'Light', icon: ICON.sun }, { id: 'dark', nam
 function buildPalette(host) {
   const pal = document.createElement('div');
   pal.id = 'palette'; pal.className = 'palette inline'; pal.hidden = false;
-  pal.innerHTML = `<div class="pal-label">Appearance</div>
-    <div class="mode"><span class="thumb"></span>${MODES.map(m => `<button data-mode="${m.id}" title="${m.name}">${m.icon}${m.name}</button>`).join('')}</div>
-    <div class="pal-label">Theme</div>
-    <div class="pal-grid">${THEMES.map((t, i) =>
-    `<button class="pal" data-theme-id="${t.id}" title="${t.name}" style="--i:${i};--pg:linear-gradient(180deg,${t.c[0]},${t.c[1]});--pc:${t.c[1]};--pt:${t.t}">${ICON.check}</button>`).join('')}</div><div class="pal-name"></div>`;
+  pal.innerHTML = `<div class="mode"><span class="thumb"></span>${MODES.map(m => `<button data-mode="${m.id}" title="${m.name}">${m.icon}${m.name}</button>`).join('')}</div>
+`;
   host.append(pal);
-  const label = pal.querySelector('.pal-name'), thumb = pal.querySelector('.mode .thumb');
+  const thumb = pal.querySelector('.mode .thumb');
   const mark = () => {
-    pal.querySelectorAll('.pal').forEach(b => b.classList.toggle('on', b.dataset.themeId === curTheme()));
     const mi = MODES.findIndex(m => m.id === curMode());
     pal.querySelectorAll('.mode button').forEach((b, i) => b.classList.toggle('on', i === mi));
     thumb.style.transform = `translateX(${mi * 100}%)`;
   };
-  const showName = () => { label.textContent = THEMES.find(t => t.id === curTheme())?.name || ''; };
-  pal.addEventListener('mouseover', e => { const b = e.target.closest('.pal'); if (b) label.textContent = b.title; });
-  pal.addEventListener('mouseleave', showName);
+  const showName = () => { };
   pal.addEventListener('click', e => {
     const mb = e.target.closest('.mode button');
     if (mb) {
       reveal(mb, () => { setMode(mb.dataset.mode); try { localStorage.setItem('vaultMode', mb.dataset.mode); } catch { } mark(); });
       return;
     }
-    const b = e.target.closest('.pal'); if (!b) return;
-    reveal(b, () => { setTheme(b.dataset.themeId); try { localStorage.setItem('vaultTheme', b.dataset.themeId); } catch { } mark(); showName(); });
   });
   mark(); showName();
   return { pal, mark, showName };
 }
+/* one button: light <-> dark. Sun while dark, moon while light. Plain black or white, no colour. */
+const effMode = () => curMode() === 'auto' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : curMode();
+function syncThemeBtn() { const b = $('themeBtn'); if (!b) return; const d = effMode() === 'dark'; b.innerHTML = d ? ICON.sun : ICON.moon; b.title = d ? 'Switch to light mode' : 'Switch to dark mode'; }
+$('themeBtn')?.addEventListener('click', e => { const n = effMode() === 'dark' ? 'light' : 'dark'; reveal(e.currentTarget, () => { setMode(n); try { localStorage.setItem('vaultMode', n); } catch { } }); });
+addEventListener('copyit-mode', syncThemeBtn); matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', syncThemeBtn); syncThemeBtn();
 const palette = $('setTheme') ? buildPalette($('setTheme')) : null;   // the theme picker lives in Settings
 $('typeChips')?.addEventListener('click', e => {
   const b = e.target.closest('button[data-type]'); if (!b) return;

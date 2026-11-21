@@ -54,6 +54,7 @@
 :root[data-theme=honey]{--g1:#ffd04d;--g2:#fcb853;--g3:#f9a15a;--accent:#b86f02;--accent-rgb:184,111,2;--accent-soft:#ffd98a;--on:#3b2300;--b1:#ffd04d;--b2:#fbb45a;--b3:#ffe9a8}
 :root[data-theme=flame]{--g1:#ffa63d;--g2:#f56a22;--g3:#e8190a;--accent:#dc3f0e;--accent-rgb:220,63,14;--accent-soft:#ffb26b;--on:#fff;--b1:#ffa63d;--b2:#f56a22;--b3:#ff7a59}
 :root[data-theme=aqua]{--g1:#5af5ff;--g2:#52d5ff;--g3:#4ab8ff;--accent:#0a8fc4;--accent-rgb:10,143,196;--accent-soft:#8ae6ff;--on:#052b3a;--b1:#5af5ff;--b2:#4ab8ff;--b3:#a6f0ff}
+:root[data-theme=custom]{--accent:var(--acc-l)}
 :root[data-mode=dark][data-theme]{--accent:var(--accent-soft)}
 @media (prefers-color-scheme:dark){:root:not([data-mode])[data-theme]{--accent:var(--accent-soft)}}
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
@@ -712,7 +713,7 @@ body{background:var(--bg)}
 .datasec h3{margin:14px 0 2px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .dt-btns{display:flex;flex-wrap:wrap;gap:8px;padding:2px 2px 8px}
 
-/* ───── v1.1.0 page tools ───── */
+/* ───── v1.2.0 page tools ───── */
 .ptbar{position:relative;margin:2px 18px 8px;z-index:30}
 .ptbtn{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;border:1px solid var(--card-edge);border-radius:12px;background:var(--field);color:var(--ink);font-size:13px;font-weight:600;cursor:pointer;text-align:left}
 .ptbtn:hover{border-color:rgba(var(--accent-rgb),.5)}
@@ -750,13 +751,13 @@ body{background:var(--bg)}
 .tools{margin:10px 0 12px;padding:4px 16px 10px;border:1px solid var(--line);border-radius:14px}
 h3.tt{margin:10px 0 2px;font-size:13px;font-weight:700}
 
-/* v1.1.0 logo (image) */
+/* v1.2.0 logo (image) */
 .logo img{display:block;width:100%;height:100%;object-fit:contain}
 .logo::after{display:none}
 .logo{filter:drop-shadow(0 6px 8px rgba(20,40,120,.28))}
 .splash-logo img{display:block;width:100%;height:auto}
 
-/* side-by-side choice (v1.1.0) */
+/* side-by-side choice (v1.2.0) */
 .pt-opts{margin:4px 0 6px}
 .unit{display:flex;gap:4px;padding:3px;border-radius:11px;background:var(--field)}
 .unit button{flex:1;padding:7px 6px;border:0;border-radius:8px;background:transparent;color:var(--muted);font-weight:600;font-size:12.5px;font-family:inherit;cursor:pointer}
@@ -834,7 +835,7 @@ h3.tt{margin:10px 0 2px;font-size:13px;font-weight:700}
 #viewDialog.min .dlg-foot,#viewDialog.min .vw-find,#viewDialog.min .vw-note{display:none!important}
 #viewDialog.sized{position:fixed}
 
-/* ───────────── v1.1.0 minimal popup ───────────── */
+/* ───────────── v1.2.0 minimal popup ───────────── */
 .popup header.top .tools{gap:6px}
 .segrow{display:flex;align-items:center;gap:8px;margin:0 18px 8px}
 .popup .segrow .seg{margin:0;flex:1}
@@ -898,3 +899,13 @@ h3.tt{margin:10px 0 2px;font-size:13px;font-weight:700}
 
 .vw-audio{width:100%;display:grid;place-items:center;padding:36px 12px;border-radius:10px;background:linear-gradient(135deg,#dfe7ff,#f3f6ff)}.vw-audio audio{width:min(520px,100%)}
 :root[data-mode=dark] .vw-audio{background:linear-gradient(135deg,#1d2f6b,#12131a)}
+/* custom accent colour (set by theme.js) — must stay last */
+:root[data-theme=custom]{--accent:var(--acc-l)}
+:root[data-theme=custom][data-mode=dark]{--accent:var(--accent-soft)}
+@media (prefers-color-scheme:dark){:root[data-theme=custom]:not([data-mode]){--accent:var(--accent-soft)}}
+:root[data-theme=custom] .s1 .bubble{background-color:var(--g2)}
+:root[data-theme=custom] .bar .fill{background:var(--accent)}
+
+/* single light/dark button (black in light, white in dark; never coloured) */
+.themebtn{color:var(--ink)}.themebtn .i{stroke:currentColor;fill:none}.themebtn:hover{transform:none}
+header .tools:has(#themeBtn){margin:0;padding:0;border:0;gap:8px;display:flex}

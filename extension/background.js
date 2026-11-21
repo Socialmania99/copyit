@@ -95,7 +95,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 
-/* ───────────── v1.1.0: page helper (click to copy, copy text from images & videos) ───────────── */
+/* ───────────── v1.2.0: page helper (click to copy, copy text from images & videos) ───────────── */
 const CS_ID = 'copyit-page-helper', ALL = { origins: ['<all_urls>'] };
 
 // The page helper is only registered while a feature is switched on AND you have allowed Copyit on all sites.

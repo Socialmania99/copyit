@@ -1,11 +1,11 @@
-# Copyit 1.1.0 features
+# Copyit 1.2.0 features
 
 ## Saving
 - Save text, links, code, images and videos. Right-click selected text: "Save selected text to Copyit".
 - Open with the toolbar icon or `Ctrl+Shift+Y` (`Cmd+Shift+Y` on Mac).
 - Popup for quick use. Dashboard for the full view.
 
-## Page tools (new in 1.1.0, both off by default)
+## Page tools (new in 1.2.0, both off by default)
 Turn them on in the popup (bottom left, "Tools") or in Settings. Chrome asks once to allow Copyit on websites; it only acts on a page after you hover or click.
 - **Pop-out player (picture in picture).** Open a saved video or audio in the Copyit preview window and press the pop-out button. A small player floats on top with play/pause, seek, mute, Minimize and Maximize. It works only for media saved in Copyit, never on websites.
 - **Movable preview.** Hold the right mouse button on the preview window to move it. Minimize and Maximize sit next to the rotate button.
@@ -34,7 +34,7 @@ Turn them on in the popup (bottom left, "Tools") or in Settings. Chrome asks onc
 ## Settings
 - **Its own full page** with a sidebar: General, Page tools, Privacy & security, Storage & clean-up, Import & export, Danger zone, plus Contact us and Docs & Guide. A Back to Dashboard button returns you. Desktop layout that folds into a menu on small windows.
 - **Import and export:** JSON backup (full, with images and videos), CSV, TXT, Markdown. Import many files at once. JSON merges without duplicates.
-- **Themes:** Multicolor (flat) and Black & White (gradient). Light, Dark or Auto.
+- **Appearance:** Light, Dark or Auto, plus a one-tap light/dark button in the popup and dashboard. **Custom colour picker** (wheel, brightness, swatches, hex) recolours every Copyit page.
 - **Donate:** PayPal, Ko-fi, Bitcoin, Ethereum, Solana. Fixed list.
 - Danger zone for clearing data.
 

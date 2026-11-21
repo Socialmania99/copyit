@@ -1,4 +1,4 @@
-/* v1.1.0 page tools: the "Click to copy" and "Copy text from images & videos" switches.
+/* v1.2.0 page tools: the "Click to copy" and "Copy text from images & videos" switches.
    Shared by the popup and the dashboard settings. The page helper only runs while one of these is on,
    and Chrome asks you once to allow Copyit on websites when you turn the first one on. */
 (() => {
