@@ -23,7 +23,7 @@ Download, install and every main feature in about 2 minutes. Player not showing?
 - Preview button opens a small viewer window.
 - **Scan to open:** QR code for short clips (text or links, up to 5 KB). Offline. Longer text becomes numbered QR codes. Images, videos, files too big.
 - Import and export: JSON, CSV, TXT, Markdown.
-- Light / Dark / Auto and a custom colour picker. No animations.
+- Light / Dark / Auto, a custom colour picker and 13 languages. No animations.
 - Shortcut: `Ctrl+Shift+Y` (`Cmd+Shift+Y` on Mac).
 
 Full list: [FEATURES.md](FEATURES.md).

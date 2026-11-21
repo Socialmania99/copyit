@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Copyit Dashboard</title>
 <script src="theme.js"></script>
+<script src="i18n-data.js"></script><script src="i18n.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="dashboard">
@@ -22,7 +23,7 @@
   </div>
   <div class="actions"><button id="openSettings" class="ib lg" title="Settings"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
     <button id="saveClipboard" class="btn primary"><span class="spin"></span><svg class="i" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="3"/><path d="M9 4V3h6v1M12 9v6M9.5 12.5L12 15l2.5-2.5"/></svg><span>Save clipboard</span></button>
-    <button id="manualAdd" data-add class="btn primary"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add text</button><button id="themeBtn" class="ib lg themebtn" type="button" title="Switch light or dark" aria-label="Switch light or dark"></button><button id="donate" class="ib lg donate" title="Support Copyit"><svg class="i" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.7-8-10.4A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.5c0 5.7-8 10.4-8 10.4z"/></svg></button>
+    <button id="manualAdd" data-add class="btn primary"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Add text</button><span class="cwrap langwrap"><button id="langBtn" class="ib lg" type="button" title="Language" aria-label="Language" aria-haspopup="true" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9S14.6 18.2 12 21c-2.6-2.8-3.9-5.8-3.9-9S9.4 5.8 12 3z"/></svg></button><div class="cmenu langmenu" id="langMenu" hidden data-no-i18n></div></span><button id="themeBtn" class="ib lg themebtn" type="button" title="Switch light or dark" aria-label="Switch light or dark"></button><button id="donate" class="ib lg donate" title="Support Copyit"><svg class="i" viewBox="0 0 24 24"><path d="M12 20.5s-8-4.7-8-10.4A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 8 2.5c0 5.7-8 10.4-8 10.4z"/></svg></button>
   </div>
 </header>
 

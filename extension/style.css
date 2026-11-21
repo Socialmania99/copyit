@@ -911,3 +911,12 @@ h3.tt{margin:10px 0 2px;font-size:13px;font-weight:700}
 header .tools:has(#themeBtn){margin:0;padding:0;border:0;gap:8px;display:flex}
 
 .cmenu.io{right:-74px;width:236px}
+#langSel{min-width:220px;margin-top:4px}
+
+.langwrap{position:relative;display:inline-flex}
+.langmenu{right:0;left:auto;top:calc(100% + 8px);bottom:auto;width:190px;max-height:440px;overflow:auto;z-index:60}
+.langmenu button{justify-content:space-between}
+.langmenu button .ck{width:16px;height:16px;color:var(--accent);flex:none;visibility:hidden}
+.langmenu button.on .ck{visibility:visible}
+[dir=rtl] .langmenu{right:auto;left:0}
+header .tools:has(#themeBtn){gap:8px}

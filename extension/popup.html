@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Copyit</title>
 <script src="theme.js"></script>
+<script src="i18n-data.js"></script><script src="i18n.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="popup">
@@ -17,7 +18,7 @@
       <p><svg class="i xs" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Private · saved on this device</p>
     </div>
   </div>
-  <div class="tools"><button id="openDashboard" class="ib lg" title="Open full dashboard"><svg class="i" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></button><button id="themeBtn" class="ib lg themebtn" type="button" title="Switch light or dark" aria-label="Switch light or dark"></button></div>
+  <div class="tools"><button id="openDashboard" class="ib lg" title="Open full dashboard"><svg class="i" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg></button><span class="cwrap langwrap"><button id="langBtn" class="ib lg" type="button" title="Language" aria-label="Language" aria-haspopup="true" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9S14.6 18.2 12 21c-2.6-2.8-3.9-5.8-3.9-9S9.4 5.8 12 3z"/></svg></button><div class="cmenu langmenu" id="langMenu" hidden data-no-i18n></div></span><button id="themeBtn" class="ib lg themebtn" type="button" title="Switch light or dark" aria-label="Switch light or dark"></button></div>
 </header>
 
 <div class="toolbar">

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Copyit Settings</title>
 <script src="theme.js"></script>
+<script src="i18n-data.js"></script><script src="i18n.js"></script>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="settings.css">
 </head>
@@ -37,6 +38,7 @@
     <section class="sp-panel" id="cat-general" data-panel="general">
       <div class="sp-card"><h2>Appearance</h2><p class="sp-sub">Choose light, dark or automatic. Pick your own colour in the next card.</p><div id="setTheme"></div></div>
       <div class="sp-card"><h2>Custom colour</h2><p class="sp-sub">Pick any colour. It changes buttons, highlights and accents in the popup, dashboard and every Copyit page.</p><div id="colorPick" class="cp"><canvas id="cpWheel" width="440" height="440" aria-label="Colour wheel"></canvas><input id="cpBright" type="range" min="0" max="100" value="100" aria-label="Brightness"><div class="cp-sw" id="cpSw"></div><div class="cp-row"><span class="cp-prev" id="cpPrev"></span><input id="cpHex" maxlength="7" spellcheck="false" aria-label="Hex colour" placeholder="#f2523a"><button class="btn" id="cpReset" type="button">Reset</button></div></div></div>
+      <div class="sp-card"><h2>Language</h2><p class="sp-sub">Choose the language of Copyit's menus and buttons.</p><select id="langSel" class="sel" aria-label="Language"></select></div>
       <div class="sp-card"><h2>About Copyit</h2>
         <div class="set-row nohover"><span><b>Version</b><small id="aboutVer">1.2.0</small></span><a class="btn sm" href="https://github.com/Socialmania99/Copyit/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer">What's new</a></div>
         <div class="set-row nohover"><span><b>Support email</b><small>socialmania99@gmail.com</small></span><button type="button" class="btn sm" id="copyMail">Copy email</button></div>

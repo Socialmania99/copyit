@@ -35,6 +35,7 @@ Turn them on in the popup (bottom left, "Tools") or in Settings. Chrome asks onc
 - **Its own full page** with a sidebar: General, Page tools, Privacy & security, Storage & clean-up, Import & export, Danger zone, plus Contact us and Docs & Guide. A Back to Dashboard button returns you. Desktop layout that folds into a menu on small windows.
 - **Import and export:** JSON backup (full, with images and videos), CSV, TXT, Markdown. Import many files at once. JSON merges without duplicates.
 - **Appearance:** Light, Dark or Auto, plus a one-tap light/dark button in the popup and dashboard. **Custom colour picker** (wheel, brightness, swatches, hex) recolours every Copyit page.
+- **Language:** 13 languages in Settings > General (English, Spanish, French, German, Portuguese, Italian, Russian, Arabic, Hindi, Japanese, Korean, Simplified and Traditional Chinese). Works offline.
 - **Donate:** PayPal, Ko-fi, Bitcoin, Ethereum, Solana. Fixed list.
 - Danger zone for clearing data.
 
