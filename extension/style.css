@@ -909,3 +909,5 @@ h3.tt{margin:10px 0 2px;font-size:13px;font-weight:700}
 /* single light/dark button (black in light, white in dark; never coloured) */
 .themebtn{color:var(--ink)}.themebtn .i{stroke:currentColor;fill:none}.themebtn:hover{transform:none}
 header .tools:has(#themeBtn){margin:0;padding:0;border:0;gap:8px;display:flex}
+
+.cmenu.io{right:-74px;width:236px}

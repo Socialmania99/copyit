@@ -91,5 +91,31 @@
       pipWin = null;
     }, { once: true });
   }
-  window.CopyitPip = { open };
+  /* Pop out an embedded video (YouTube etc.) saved in Copyit. The frame moves to a small floating window; the preview frame is paused (blanked) meanwhile.
+     The embed restarts, because a cross-site player's position can't be read. */
+  async function openEmbed(frame, label) {
+    if (!frame || !frame.src) return { ok: false, msg: 'No video to pop out' };
+    if (pipWin) { try { pipWin.close(); } catch { } return { ok: true }; }
+    if (!(window.documentPictureInPicture && window.documentPictureInPicture.requestWindow)) return { ok: false, msg: 'Pop-out needs Chrome 116 or newer' };
+    let win; try { win = await window.documentPictureInPicture.requestWindow({ width: 480, height: 330 }); } catch (e) { return { ok: false, msg: e && e.name === 'NotAllowedError' ? 'Press the button again to pop out' : 'Pop-out is not available here' }; }
+    pipWin = win;
+    const src = frame.src, d = win.document;
+    const sheet = new win.CSSStyleSheet();
+    sheet.replaceSync(`html,body{margin:0;height:100%;background:#0b0c10;color:#fff;font:13px system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden}
+      .wrap{display:flex;flex-direction:column;height:100%}.wrap iframe{flex:1;min-height:0;border:0;width:100%;background:#000}
+      .bar{flex:none;display:flex;align-items:center;gap:8px;padding:6px 10px;background:#12131a}
+      .t{flex:1;min-width:0;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      button{flex:none;border:0;border-radius:8px;padding:6px 10px;background:rgba(255,255,255,.12);color:#fff;font:600 12px system-ui,sans-serif;cursor:pointer}button:hover{background:rgba(255,255,255,.22)}`);
+    d.adoptedStyleSheets = [sheet];
+    const wrap = d.createElement('div'); wrap.className = 'wrap';
+    const f = d.createElement('iframe'); f.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen'); f.setAttribute('allowfullscreen', ''); f.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin'); f.src = src;
+    const bar = d.createElement('div'); bar.className = 'bar';
+    const t = d.createElement('div'); t.className = 't'; t.textContent = label || 'Copyit';
+    const back = d.createElement('button'); back.type = 'button'; back.textContent = 'Back to Copyit'; back.addEventListener('click', () => { try { win.close(); } catch { } window.focus(); });
+    bar.append(t, back); wrap.append(f, bar); d.body.appendChild(wrap);
+    frame.src = 'about:blank';
+    win.addEventListener('pagehide', () => { try { if (frame.isConnected) frame.src = src; } catch { } pipWin = null; }, { once: true });
+    return { ok: true };
+  }
+  window.CopyitPip = { open, openEmbed };
 })();

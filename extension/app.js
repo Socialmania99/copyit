@@ -1105,9 +1105,22 @@ document.querySelectorAll('[data-add]').forEach(b => b.addEventListener('click',
   const row = $('chipRow'), chips = $('typeChips'), tg = $('chipsToggle'); if (!row || !chips || !tg) return;
   chips.addEventListener('wheel', e => { if (row.classList.contains('open')) return; if (chips.scrollWidth <= chips.clientWidth) return; e.preventDefault(); chips.scrollLeft += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY); }, { passive: false });
   tg.addEventListener('click', () => { const o = row.classList.toggle('open'); tg.setAttribute('aria-expanded', String(o)); const t = o ? 'Show fewer types' : 'Show all types'; tg.title = t; tg.setAttribute('aria-label', t); chips.scrollLeft = 0; });
+  const iob = $('ioBtn'), iom = $('ioMenu');
+  if (iob && iom) {
+    const ioShut = () => { iom.hidden = true; iob.setAttribute('aria-expanded', 'false'); };
+    iob.addEventListener('click', e => { e.stopPropagation(); const cm = $('chatMenu'); if (cm) { cm.hidden = true; $('chatBtn')?.setAttribute('aria-expanded', 'false'); } iom.hidden = !iom.hidden; iob.setAttribute('aria-expanded', String(!iom.hidden)); });
+    document.addEventListener('click', e => { if (!iom.hidden && !e.target.closest('.cwrap')) ioShut(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && !iom.hidden) { ioShut(); iob.focus(); } });
+    iom.addEventListener('click', e => {
+      const b = e.target.closest('[data-io]'); if (!b) return; ioShut();
+      const k = b.dataset.io;
+      if (k === 'import') openSettingsPage('backup');
+      else if (k === 'json') exportJson(); else if (k === 'csv') exportCsv(); else if (k === 'txt') exportTxt(); else if (k === 'md') exportMd();
+    });
+  }
   const SUPPORT = 'socialmania99@gmail.com', btn = $('chatBtn'), menu = $('chatMenu'); if (!btn || !menu) return;
   const shut = () => { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); };
-  btn.addEventListener('click', e => { e.stopPropagation(); menu.hidden = !menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); });
+  btn.addEventListener('click', e => { e.stopPropagation(); if ($('ioMenu')) { $('ioMenu').hidden = true; $('ioBtn')?.setAttribute('aria-expanded', 'false'); } menu.hidden = !menu.hidden; btn.setAttribute('aria-expanded', String(!menu.hidden)); });
   document.addEventListener('click', e => { if (!menu.hidden && !e.target.closest('.cwrap')) shut(); });
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { shut(); btn.focus(); } });
   menu.addEventListener('click', async e => {
@@ -1303,8 +1316,8 @@ async function loadWebFrame(url) {
 let vwItem = null;
 const vwKind = x => kindOf(x);
 $('vwPip')?.addEventListener('click', async () => {
-  const el = $('vwBody').querySelector('video,audio');
-  const r = await (window.CopyitPip ? window.CopyitPip.open(el, ($('vwTitle').textContent || 'Copyit') + ' · Copyit') : { ok: false, msg: 'Pop-out is not available' });
+  const el = $('vwBody').querySelector('video,audio'), fr = !el && vwMedia && vwMedia.type === 'embed' ? $('vwBody').querySelector('iframe.vw-frame') : null, lab = ($('vwTitle').textContent || 'Copyit') + ' · Copyit';
+  const r = await (window.CopyitPip ? (fr ? window.CopyitPip.openEmbed(fr, lab) : window.CopyitPip.open(el, lab)) : { ok: false, msg: 'Pop-out is not available' });
   if (!r.ok) toast(r.msg, 'err');
 });
 function viewById(id) { const x = entries.find(i => i.id === id); if (x) openViewer(x); else toast('That clip no longer exists.', 'err'); }
@@ -1322,7 +1335,7 @@ function vwRender(x) {
   $('vwTile').innerHTML = ICON[k] || ICON.text;
   $('vwTitle').textContent = d ? d.title : (TYPES[k]?.label || 'Text').replace(/s$/, '') + ' clip';
   $('vwSub').textContent = `${srcOf(x).label} · ${dateText(x.copiedAt || x.createdAt)} · ${statLine(x, k)}`.replace(/^ · /, '');
-  $('vwPip').hidden = !(d && (d.type === 'video' || d.type === 'audio'));
+  $('vwPip').hidden = !(d && (d.type === 'video' || d.type === 'audio' || d.type === 'embed'));
   body.classList.toggle('media', !!d); body.classList.toggle('checker', !!d && d.type === 'svg');
   if (d) {
     const u = c.trim();
